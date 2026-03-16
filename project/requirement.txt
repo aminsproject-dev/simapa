@@ -1,0 +1,21 @@
+Menu :
+1. Data Pekerja (CRUD, Export excel, Import excel)
+2. Data Pengalaman Perusahaan (CRUD, Export excel, Import excel)
+3. Master (CRUD)
+- Negara
+- Provinsi
+- Kota/Kabupaten
+- kecamatan
+- desa
+- Status Kepegawaian
+- Jenis Tenaga Ahli
+- Kewarganegaraan
+- Bahasa
+- Pendidikan Akhir
+- KBLI
+- Kategori Pekerjaan
+- Jenis Instansi
+- Nama Instansi
+- Satuan Kerja
+4. Pengaturan (CRUD)
+- Hak Akses (Administrator, Operator)
