@@ -34,22 +34,22 @@
                                 </thead>
                                 <tbody>
                                     <?php $i = 1;
-                                    if (isset($dt_pengguna)) {
-                                        foreach ($dt_pengguna as $row) {
+                                    if (isset($dt_users)) {
+                                        foreach ($dt_users as $row) {
                                     ?>
                                             <tr>
                                                 <td><?= $i++; ?></td>
-                                                <td><?= $row->nama; ?></td>
-                                                <td><?= $row->nip; ?></td>
-                                                <td><?= $row->nama_pegawai; ?></td>
-                                                <td><?= $row->username; ?></td>
-                                                <td><?= $row->role; ?></td>
+                                                <td><?= $row['nama']; ?></td>
+                                                <td><?= $row['nip']; ?></td>
+                                                <td><?= $row['nama_pegawai']; ?></td>
+                                                <td><?= $row['username']; ?></td>
+                                                <td><?= $row['role']; ?></td>
                                                 <td class="text-center">
                                                     <div class="d-inline-flex">
-                                                        <a data-bs-toggle="modal" data-bs-target="#modal_edit_<?= $row->id; ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
+                                                        <a data-bs-toggle="modal" data-bs-target="#modal_edit_<?= $row['id']; ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
-                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('setting/penggunaDelete/' . $row->id); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('users/delete/' . encrypt_data($row['id'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
                                                             <i class="ph-trash me-2"></i>
                                                         </a>
                                                     </div>
@@ -86,7 +86,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="<?= site_url('setting/penggunaAdd'); ?>" method="post">
+            <form action="<?= site_url('users/create'); ?>" method="post">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
 
@@ -96,7 +96,7 @@
                             <select class="form-control select-search" id="id_pegawai" name="id_pegawai" required>
                                 <option>Pilih Pegawai</option>
                                 <?php foreach ($dt_pegawai as $pegawai) { ?>
-                                    <option value="<?= $pegawai->id_pegawai; ?>"><?= $pegawai->nama_pegawai; ?></option>
+                                    <option value="<?= $pegawai['id_pegawai']; ?>"><?= $pegawai['nama_pegawai']; ?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -122,7 +122,6 @@
                             <select class="form-control select-search" id="role" name="role" required>
                                 <option>Pilih Akses</option>
                                 <option value="Admin">Admin</option>
-                                <option value="Kepala Desa">Kepala Desa</option>
                                 <option value="Staf">Staf</option>
                             </select>
                         </div>
@@ -143,10 +142,10 @@
 </div>
 
 <?php $i = 1;
-if (isset($dt_pengguna)) {
-    foreach ($dt_pengguna as $row) {
+if (isset($dt_users)) {
+    foreach ($dt_users as $row) {
 ?>
-        <div id="modal_edit_<?= $row->id; ?>" class="modal fade" tabindex="-1">
+        <div id="modal_edit_<?= $row['id']; ?>" class="modal fade" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -154,9 +153,8 @@ if (isset($dt_pengguna)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('setting/penggunaEdit'); ?>" method="post">
+                    <form action="<?= site_url('users/update/' . encrypt_data($row['id'])); ?>" method="post">
                         <?= csrf_field(); ?>
-                        <input type="hidden" name="user_id" value="<?= $row->id; ?>">
                         <div class="modal-body">
 
                             <div class="row mb-3">
@@ -164,13 +162,9 @@ if (isset($dt_pengguna)) {
                                 <div class="col-lg-10">
                                     <select class="form-control select-search" id="id_pegawai" name="id_pegawai" required>
                                         <option>Pilih Pegawai</option>
-                                        <?php foreach ($dt_pegawai as $pegawai) {
-                                            if ($row->id_pegawai == $pegawai->id_pegawai) { ?>
-                                                <option value="<?= $pegawai->id_pegawai; ?>" selected><?= $pegawai->nama_pegawai; ?></option>
-                                            <?php } else { ?>
-                                                <option value="<?= $pegawai->id_pegawai; ?>"><?= $pegawai->nama_pegawai; ?></option>
-                                        <?php }
-                                        } ?>
+                                        <?php foreach ($dt_pegawai as $pegawai) { ?>
+                                            <option value="<?= $pegawai['id_pegawai']; ?>" <?= $pegawai['id_pegawai'] == $row['id_pegawai'] ? 'selected' : ''; ?>><?= $pegawai['nama_pegawai']; ?></option>
+                                        <?php } ?>
                                     </select>
                                 </div>
                             </div>
@@ -178,7 +172,7 @@ if (isset($dt_pengguna)) {
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Username<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="username" value="<?= $row->username; ?>" class="form-control" placeholder="Masukkan Username" required>
+                                    <input type="text" name="username" value="<?= $row['username']; ?>" class="form-control" placeholder="Masukkan Username" required>
                                 </div>
                             </div>
 
@@ -194,10 +188,8 @@ if (isset($dt_pengguna)) {
                                 <div class="col-lg-10">
                                     <select class="form-control select-search" id="role" name="role" required>
                                         <option>Pilih Akses</option>
-                                        <option value="<?= $row->role; ?>" selected><?= $row->role; ?></option>
-                                        <option value="Admin">Admin</option>
-                                        <option value="Kepala Desa">Kepala Desa</option>
-                                        <option value="Staf">Staf</option>
+                                        <option value="Admin" <?= $row['role'] == 'Admin' ? 'selected' : ''; ?>>Admin</option>
+                                        <option value="Staf" <?= $row['role'] == 'Staf' ? 'selected' : ''; ?>>Staf</option>
                                     </select>
                                 </div>
                             </div>

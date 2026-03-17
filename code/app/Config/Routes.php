@@ -36,10 +36,14 @@ $routes->group('/marketing', ['filter' => 'authGuard'], function ($routes) {
 });
 
 $routes->group('/master', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('pegawai', 'Bo\Master::pegawai');
-    $routes->post('pegawaiAdd', 'Bo\Master::pegawaiAdd');
-    $routes->post('pegawaiEdit', 'Bo\Master::pegawaiEdit');
-    $routes->get('pegawaiDelete/(:segment)', 'Bo\Master::pegawaiDelete');
+    $routes->group('employees', [
+        'namespace' => 'App\Controllers\Bo\Master',
+    ], function ($routes) {
+        $routes->get('', 'EmployeesController::index');
+        $routes->post('pegawaiAdd', 'EmployeesController::pegawaiAdd');
+        $routes->post('pegawaiEdit', 'EmployeesController::pegawaiEdit');
+        $routes->get('pegawaiDelete/(:segment)', 'EmployeesController::pegawaiDelete');
+    });
 
     $routes->get('struktur', 'Bo\Master::struktur');
 
@@ -54,13 +58,22 @@ $routes->group('/master', ['filter' => 'authGuard'], function ($routes) {
     $routes->get('garansiDelete/(:segment)', 'Bo\Master::garansiDelete');
 });
 
-$routes->group('/setting', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('', 'Bo\Dashboard::setting');
-    $routes->post('prosesSetting', 'Bo\Dashboard::prosesSetting');
-    $routes->post('prosesSettingKode', 'Bo\Dashboard::prosesSettingKode');
+$routes->group('/users', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'UsersController::index');
+    $routes->post('create', 'UsersController::create');
+    $routes->post('update/(:segment)', 'UsersController::update/$1');
+    $routes->get('delete/(:segment)', 'UsersController::delete/$1');
+});
 
-    $routes->get('pengguna', 'Bo\Dashboard::pengguna');
-    $routes->post('penggunaAdd', 'Bo\Dashboard::penggunaAdd');
-    $routes->post('penggunaEdit', 'Bo\Dashboard::penggunaEdit');
-    $routes->get('penggunaDelete/(:segment)', 'Bo\Dashboard::penggunaDelete');
+$routes->group('/setting', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'SettingController::index');
+
+    $routes->post('update/(:segment)', 'SettingController::update/$1');
+    $routes->post('update-kode/(:segment)', 'SettingController::updateKode/$1');
 });

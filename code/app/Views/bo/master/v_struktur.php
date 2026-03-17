@@ -125,8 +125,8 @@
         $(function() {
 
             var datascource = {
-                'name': '<?= $row_direktur->nama; ?>',
-                'title': '<?= $row_direktur->nama_pegawai; ?>',
+                'name': '<?= isset($row_direktur->nama) ? $row_direktur->nama : 'Tidak ditemukan'; ?>',
+                'title': '<?= isset($row_direktur->nama_pegawai) ? $row_direktur->nama_pegawai : 'Tidak ditemukan'; ?>',
                 'children': [
                     <?php foreach ($dt_pegawai as $pegawai) {
                         if ($pegawai->jabatan == 1) {
