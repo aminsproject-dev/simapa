@@ -29,7 +29,7 @@ class EmployeesController extends BaseController
         ];
 
         echo view('bo/pages/v_header', $data);
-        echo view('bo/master/pegawai/v_pegawai');
+        echo view('bo/master/employees/v_employees');
         echo view('bo/pages/v_footer');
     }
 
@@ -46,5 +46,35 @@ class EmployeesController extends BaseController
             $errors = $this->pegawaiModel->errors();
             return redirect()->back()->withInput()->with('error', reset($errors));
         }
+
+        return redirect()->to('master/employees')->with('success', 'Data karyawan berhasil ditambah');
+    }
+
+    public function update($id)
+    {
+        if (empty($row_employee = $this->pegawaiModel->where('id_pegawai', decrypt_data($id))->first())) {
+            return redirect()->back()->withInput()->with('error', 'Data tidak ditemukan');
+        }
+
+        $data = $this->request->getPost();
+
+        if (!$this->pegawaiModel->update($row_employee['id_pegawai'], $data)) {
+            return redirect()->back()->withInput()->with('error', $this->pegawaiModel->errors());
+        }
+
+        return redirect()->to('master/employees')->with('success', 'Data berhasil diubah');
+    }
+
+    public function delete($id)
+    {
+        if (empty($row_employee = $this->pegawaiModel->where('id_pegawai', decrypt_data($id))->first())) {
+            return redirect()->back()->withInput()->with('error', 'Data tidak ditemukan');
+        }
+
+        if (!$this->pegawaiModel->delete($row_employee['id_pegawai'])) {
+            return redirect()->back()->with('error', $this->pegawaiModel->errors());
+        }
+
+        return redirect()->to('master/employees')->with('success', 'Data berhasil dihapus');
     }
 }

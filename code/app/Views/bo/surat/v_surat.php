@@ -20,14 +20,14 @@
         <div class="row">
             <?php foreach ($dt_menuSurat as $menuSurat) { ?>
                 <div class="col-sm-4 col-xl-4">
-                    <a href="<?= base_url('surat/menuSurat' . $menuSurat->url . '&jns=' . base64_encode($menuSurat->jenis) . '&action=' . base64_encode('view')); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Lihat Surat">
+                    <a href="<?= base_url('surat/menu-surat' . $menuSurat['url'] . '&jns=' . encrypt_data($menuSurat['jenis']) . '&action=' . encrypt_data('view')); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Lihat Surat">
                         <div class="card card-body  ">
                             <div class="d-flex align-items-center">
                                 <div class="flex-fill text-muted">
-                                    <h5 class="mb-0"><?= $menuSurat->nama_menu; ?></h5>
+                                    <h5 class="mb-0"><?= $menuSurat['nama_menu']; ?></h5>
                                 </div>
 
-                                <i class="<?= $menuSurat->icon; ?> ph-2x opacity-75 ms-3 bg-primary  text-white lh-1 rounded-pill p-2 "></i>
+                                <i class="<?= $menuSurat['icon']; ?> ph-2x opacity-75 ms-3 bg-primary  text-white lh-1 rounded-pill p-2 "></i>
                             </div>
                         </div>
                     </a>

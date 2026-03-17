@@ -39,17 +39,17 @@
                                     ?>
                                             <tr>
                                                 <td><?= $i++; ?></td>
-                                                <td><?= $row->instansi; ?></td>
-                                                <td><?= $row->satuan_kerja; ?></td>
-                                                <td><?= $row->alamat_satuan_kerja; ?></td>
-                                                <td><?= $row->nama_pp; ?></td>
-                                                <td><?= $row->nama_ppk; ?></td>
+                                                <td><?= $row['instansi']; ?></td>
+                                                <td><?= $row['satuan_kerja']; ?></td>
+                                                <td><?= $row['alamat_satuan_kerja']; ?></td>
+                                                <td><?= $row['nama_pp']; ?></td>
+                                                <td><?= $row['nama_ppk']; ?></td>
                                                 <td class="text-center">
                                                     <div class="d-inline-flex">
-                                                        <a data-bs-toggle="modal" data-bs-target="#modal_edit_<?= $row->id_marketing_ekatalog; ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
+                                                        <a data-bs-toggle="modal" data-bs-target="#modal_edit_<?= $row['id_marketing_ekatalog']; ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
-                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('marketing/ekatalogDelete/' . $row->id_marketing_ekatalog); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('marketing/ekatalog/delete/' . encrypt_data($row['id_marketing_ekatalog'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
                                                             <i class="ph-trash me-2"></i>
                                                         </a>
                                                     </div>
@@ -86,7 +86,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="<?= site_url('marketing/ekatalogAdd'); ?>" method="post">
+            <form action="<?= site_url('marketing/ekatalog/add'); ?>" method="post">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
 
@@ -201,7 +201,7 @@
 if (isset($dt_ekatalog)) {
     foreach ($dt_ekatalog as $row) {
 ?>
-        <div id="modal_edit_<?= $row->id_marketing_ekatalog; ?>" class="modal fade" tabindex="-1">
+        <div id="modal_edit_<?= $row['id_marketing_ekatalog']; ?>" class="modal fade" tabindex="-1">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -209,99 +209,98 @@ if (isset($dt_ekatalog)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('marketing/ekatalogEdit'); ?>" method="post">
+                    <form action="<?= site_url('marketing/ekatalog/update/' . encrypt_data($row['id_marketing_ekatalog'])); ?>" method="post">
                         <?= csrf_field(); ?>
-                        <input type="hidden" name="id_marketing_ekatalog" value="<?= $row->id_marketing_ekatalog; ?>">
                         <div class="modal-body">
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Instansi<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="instansi" value="<?= $row->instansi; ?>" class="form-control" placeholder="Masukkan Nama Instansi" required>
+                                    <input type="text" name="instansi" value="<?= $row['instansi']; ?>" class="form-control" placeholder="Masukkan Nama Instansi" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Satuan Kerja<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="satuan_kerja" value="<?= $row->satuan_kerja; ?>" class="form-control" placeholder="Masukkan Nama Satuan Kerja" required>
+                                    <input type="text" name="satuan_kerja" value="<?= $row['satuan_kerja']; ?>" class="form-control" placeholder="Masukkan Nama Satuan Kerja" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Alamat Satuan Kerja<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <textarea name="alamat_satuan_kerja" id="alamat_satuan_kerja" class="form-control ckeditor_classic" rows="4" cols="4"><?= $row->alamat_satuan_kerja; ?></textarea>
+                                    <textarea name="alamat_satuan_kerja" id="alamat_satuan_kerja" class="form-control ckeditor_classic" rows="4" cols="4"><?= $row['alamat_satuan_kerja']; ?></textarea>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Nama PP<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="nama_pp" value="<?= $row->nama_pp; ?>" class="form-control" placeholder="Masukkan Nama PP" required>
+                                    <input type="text" name="nama_pp" value="<?= $row['nama_pp']; ?>" class="form-control" placeholder="Masukkan Nama PP" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Jabatan PP<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="jabatan_pp" value="<?= $row->jabatan_pp; ?>" class="form-control" placeholder="Masukkan Jabatan PP" required>
+                                    <input type="text" name="jabatan_pp" value="<?= $row['jabatan_pp']; ?>" class="form-control" placeholder="Masukkan Jabatan PP" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">NIP PP<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="nip_pp" value="<?= $row->nip_pp; ?>" class="form-control" placeholder="Masukkan Nip PP" required>
+                                    <input type="text" name="nip_pp" value="<?= $row['nip_pp']; ?>" class="form-control" placeholder="Masukkan Nip PP" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Email PP<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="email_pp" value="<?= $row->email_pp; ?>" class="form-control" placeholder="Masukkan Email PP" required>
+                                    <input type="text" name="email_pp" value="<?= $row['email_pp']; ?>" class="form-control" placeholder="Masukkan Email PP" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Nomor Telephone PP<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="no_tlp_pp" value="<?= $row->no_tlp_pp; ?>" class="form-control" placeholder="Masukkan Nomor Telephone PP" required>
+                                    <input type="text" name="no_tlp_pp" value="<?= $row['no_tlp_pp']; ?>" class="form-control" placeholder="Masukkan Nomor Telephone PP" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Nama PPk<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="nama_ppk" value="<?= $row->nama_ppk; ?>" class="form-control" placeholder="Masukkan Nama PPK" required>
+                                    <input type="text" name="nama_ppk" value="<?= $row['nama_ppk']; ?>" class="form-control" placeholder="Masukkan Nama PPK" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Jabatan PPk<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="jabatan_ppk" value="<?= $row->jabatan_ppk; ?>" class="form-control" placeholder="Masukkan Jabatan" required>
+                                    <input type="text" name="jabatan_ppk" value="<?= $row['jabatan_ppk']; ?>" class="form-control" placeholder="Masukkan Jabatan" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">NIP PPk<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="nip_ppk" value="<?= $row->nip_ppk; ?>" class="form-control" placeholder="Masukkan NIP PPK" required>
+                                    <input type="text" name="nip_ppk" value="<?= $row['nip_ppk']; ?>" class="form-control" placeholder="Masukkan NIP PPK" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Email PPk<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="email_ppk" value="<?= $row->email_ppk; ?>" class="form-control" placeholder="Masukkan Email PPK" required>
+                                    <input type="text" name="email_ppk" value="<?= $row['email_ppk']; ?>" class="form-control" placeholder="Masukkan Email PPK" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <label class="col-lg-2 col-form-label text-lg-end">Nomor Telephone PPk<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="no_tlp_ppk" value="<?= $row->no_tlp_ppk; ?>" class="form-control" placeholder="Masukkan Nomor Telephone PPK" required>
+                                    <input type="text" name="no_tlp_ppk" value="<?= $row['no_tlp_ppk']; ?>" class="form-control" placeholder="Masukkan Nomor Telephone PPK" required>
                                 </div>
                             </div>
 

@@ -42,8 +42,34 @@ class PegawaiModel extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
+    protected $validationRules      = [
+        'nip' => 'required|trim',
+        'jabatan' => 'required|trim',
+        'nama_pegawai' => 'required|trim',
+        'email' => 'required|trim',
+        'no_hp' => 'required|trim',
+        'aktif' => 'required|trim|integer',
+    ];
+    protected $validationMessages   = [
+        'nip' => [
+            'required' => 'Nip tidak boleh kosong',
+        ],
+        'jabatan' => [
+            'required' => 'Jabatan pegawai tidak boleh kosong',
+        ],
+        'nama_pegawai' => [
+            'required' => 'Nama pegawai tidak boleh kosong',
+        ],
+        'email' => [
+            'required' => 'Email pegawai tidak boleh kosong',
+        ],
+        'no_hp' => [
+            'required' => 'No Handphone pegawai tidak boleh kosong',
+        ],
+        'aktif' => [
+            'required' => 'Status pegawai tidak boleh kosong',
+        ],
+    ];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
@@ -63,5 +89,13 @@ class PegawaiModel extends Model
         return $this->join('tb_jabatan a', 'tb_pegawai.jabatan=a.id_jabatan', 'left')
             ->where('rowstatus', 1)
             ->findAll();
+    }
+
+    public function getSelectedEmployeeByPosition($position_id)
+    {
+        return $this->join('tb_jabatan a', 'tb_pegawai.jabatan=a.id_jabatan', 'left')
+            ->where('tb_pegawai.jabatan', $position_id)
+            ->where('rowstatus', 1)
+            ->first();
     }
 }

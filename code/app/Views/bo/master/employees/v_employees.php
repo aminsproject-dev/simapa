@@ -49,7 +49,7 @@
                                                         <a data-bs-toggle="modal" data-bs-target="#modal_edit_<?= $row['id_pegawai']; ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
-                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('master/pegawaiDelete/' . $row['id_pegawai']); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('master/employees/delete/' . encrypt_data($row['id_pegawai'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
                                                             <i class="ph-trash me-2"></i>
                                                         </a>
                                                     </div>
@@ -184,9 +184,8 @@ if (isset($dt_pegawai)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('master/pegawaiEdit'); ?>" method="post">
+                    <form action="<?= site_url('master/employees/update/' . encrypt_data($row['id_pegawai'])); ?>" method="post">
                         <?= csrf_field(); ?>
-                        <input type="hidden" name="id_pegawai" value="<?= $row['id_pegawai']; ?>">
                         <div class="modal-body">
 
                             <div class="row mb-3">
@@ -202,7 +201,7 @@ if (isset($dt_pegawai)) {
                                     <select class="form-control select-search" id="jabatan" name="jabatan" required>
                                         <option>Pilih Jabatan</option>
                                         <?php foreach ($dt_jabatan as $jabatan) { ?>
-                                            <option value="<?= $jabatan['id_jabatan']; ?>"><?= $jabatan['nama']; ?></option>
+                                            <option value="<?= $jabatan['id_jabatan']; ?>" <?= $jabatan['id_jabatan'] == $row['jabatan'] ? 'selected' : ''; ?>><?= $jabatan['nama']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
@@ -254,6 +253,16 @@ if (isset($dt_pegawai)) {
                                 <label class="col-lg-2 col-form-label text-lg-end">Alamat<span class="text-danger">*</span></label>
                                 <div class="col-lg-10">
                                     <textarea name="alamat" id="alamat" class="form-control ckeditor_classic" rows="4" cols="4"><?= $row['alamat']; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-lg-2 col-form-label text-lg-end">Aktif?<span class="text-danger">*</span></label>
+                                <div class="col-lg-10">
+                                    <select name="aktif" class="form-control select-search">
+                                        <option value="1" <?= $row['aktif'] == '1' ? 'selected' : ''; ?>>Aktif</option>
+                                        <option value="0" <?= $row['aktif'] == '0' ? 'selected' : ''; ?>>Tidak Aktif</option>
+                                    </select>
                                 </div>
                             </div>
 

@@ -312,7 +312,7 @@
 
     <div style="font-size: 9px; margin-left: -17px; margin-top: -20px;">
         <div style="background-color: #DCE6F1; border: 2px solid #145FA4;" id="centered">
-            <img width="50" height="50" style="float: left; margin-top: 5px; margin-bottom: 5px;" src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="50" height="50" style="float: left; margin-top: 5px; margin-bottom: 5px;" src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <table style="margin-left: 10px;" class="center">
                 <tr>
                     <td>

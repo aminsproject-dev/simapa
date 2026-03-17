@@ -75,7 +75,7 @@
 
                 <div class="navbar-brand flex-1 flex-lg-0">
                     <a href="<?= base_url('dashboard'); ?>" class="d-inline-flex align-items-center">
-                        <img src="<?= base_url('showLogoApp'); ?>" alt="">
+                        <img src="<?= base_url('files/logo'); ?>" alt="">
                     </a>
                 </div>
 
@@ -164,7 +164,14 @@
                                     Home
                                 </span>
                             </a>
-
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= base_url('structure'); ?>" class="nav-link <?= isset($active_structure) ? $active_structure : ''; ?>">
+                                <i class="ph-tree-structure"></i>
+                                <span>
+                                    Struktur Perusahaan
+                                </span>
+                            </a>
                         </li>
 
                         <li class="nav-item-header">
@@ -183,21 +190,28 @@
                         </li>
 
                         <li class="nav-item-header">
-                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Marketing</div>
+                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Data</div>
                             <i class="ph-dots-three sidebar-resize-show"></i>
                         </li>
 
-                        <li class="nav-item nav-item-submenu <?= isset($open_marketing) ? $open_marketing : ''; ?>">
-                            <a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="<?= base_url('marketing/ekatalog'); ?>" class="nav-link <?= isset($active_ekatalog) ? $active_ekatalog : ''; ?>">
                                 <i class="ph-storefront"></i>
-                                <span>Data Marketing</span>
+                                <span>
+                                    Data Ekatalog
+                                </span>
                             </a>
-                            <ul class="nav-group-sub collapse <?= isset($show_marketing) ? $show_marketing : ''; ?>" data-submenu-title="Marketing">
-                                <li class="nav-item">
-                                    <a href="<?= base_url('marketing/ekatalog'); ?>" class="nav-link <?= isset($active_ekatalog) ? $active_ekatalog : ''; ?>">Data Ekatalog </a>
-                                </li>
 
-                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<?= base_url('master/document'); ?>" class="nav-link <?= isset($active_document) ? $active_document : ''; ?>">
+                                <i class="ph-file-cloud"></i>
+                                <span>
+                                    Dokumen Penting
+                                </span>
+                            </a>
+
                         </li>
 
                         <li class="nav-item-header">
@@ -212,10 +226,8 @@
                             </a>
                             <ul class="nav-group-sub collapse <?= isset($show_master) ? $show_master : ''; ?>" data-submenu-title="Master">
                                 <li class="nav-item">
-                                    <a href="<?= base_url('master/struktur'); ?>" class="nav-link <?= isset($active_struktur) ? $active_struktur : ''; ?>">Struktur Perusahaan </a>
                                     <a href="<?= base_url('master/employees'); ?>" class="nav-link <?= isset($active_employees) ? $active_employees : ''; ?>">Pegawai </a>
-                                    <a href="<?= base_url('master/dokumen'); ?>" class="nav-link <?= isset($active_dokumen) ? $active_dokumen : ''; ?>">Dokumen Penting </a>
-                                    <a href="<?= base_url('master/garansi'); ?>" class="nav-link <?= isset($active_garansi) ? $active_garansi : ''; ?>">Sertifikat Garansi </a>
+                                    <a href="<?= base_url('master/guarantee'); ?>" class="nav-link <?= isset($active_guarantee) ? $active_guarantee : ''; ?>">Sertifikat Garansi </a>
                                 </li>
 
                             </ul>

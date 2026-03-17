@@ -15,17 +15,17 @@
             <div class="card-body">
               <div class="text-center mb-3">
                 <div class="d-inline-flex align-items-center justify-content-center mb-4 mt-2">
-                  <img src="<?= base_url('showLogoApp'); ?>" class="h-48px" alt="" />
+                  <img src="<?= base_url('files/logo'); ?>" class="h-48px" alt="" />
                 </div>
                 <h5 class="mb-0"><?= $title; ?></h5>
                 <span class="d-block text-muted">Masukkan Username dan Password</span>
               </div>
 
-              <?php if (session()->getFlashdata('error') !== null) {
-              ?>
-                <div class="alert alert-danger"><?= session()->getFlashdata('error'); ?></div>
+              <?php if ($error = session()->get('error')) { ?>
+                <div class="alert alert-danger">
+                  <?= esc($error, 'attr') ?>
+                </div>
               <?php } ?>
-
 
               <div class="mb-3">
                 <label class="form-label">Username</label>
@@ -57,14 +57,9 @@
 
               </div>
 
-              <?php if ($validation->getError('g-recaptcha-response')) { ?>
-                <div class='text-danger mt-2'>
-                  * <?= $validation->getError('g-recaptcha-response'); ?>
-                </div>
-              <?php } ?>
-
               <div class="mb-3">
-                <div class="g-recaptcha" data-size="normal" data-sitekey="<?= getenv('GOOGLE_RECAPTCHA_SITEKEY') ?>" data-action="LOGIN"></div>
+                <?= turnstile_widget(); ?>
+                <small class="text-danger"><?= session()->get('errors.cf-turnstile-response') != null ? session()->get('errors.cf-turnstile-response') : ''; ?></small>
               </div>
 
               <div class="mb-3">

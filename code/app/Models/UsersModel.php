@@ -74,4 +74,12 @@ class UsersModel extends Model
             ->findAll()
         ;
     }
+
+    public function getUserByUsername($username)
+    {
+        return $this->join('tb_pegawai a', 'tb_user.id_pegawai=a.id_pegawai')
+            ->where('username', $username)
+            ->limit(1)
+            ->first();
+    }
 }

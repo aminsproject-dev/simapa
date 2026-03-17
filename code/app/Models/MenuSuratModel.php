@@ -67,4 +67,13 @@ class MenuSuratModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function kodeSurat()
+    {
+        $qry = $this->select('kode')
+            ->where('url', '?page=' . service('request')->getGet('page'))
+            ->first();
+
+        return $qry['kode'];
+    }
 }

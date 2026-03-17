@@ -42,7 +42,7 @@ class SettingController extends BaseController
         $db->transBegin();
 
         try {
-            if (empty($row_setting = $this->menuSuratModel->where('id', decrypt_data($id))->first())) {
+            if (empty($row_setting = $this->confSistemModel->where('id', (int)decrypt_data($id))->first())) {
                 throw new ValidationException("Data tidak ditemukan");
             }
 

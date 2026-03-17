@@ -207,7 +207,7 @@
     <?php $row_ttd = json_decode($row_surat['tanda_tangan']); ?>
 
     <div class="pagesetup">
-        <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+        <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
 
         <div align="center" style="margin-right: 0px; margin-left: -200px;">
 
@@ -333,6 +333,7 @@
                                 <?php
 
                                 $a = $semuaHarga - $semuaHarga * $row_isiSurat->down_payment / 100;
+                                $a = max(0, $a);
                                 echo terbilang($a) . " Rupiah";
 
                                 function terbilang($x)

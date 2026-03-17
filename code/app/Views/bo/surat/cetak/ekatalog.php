@@ -295,7 +295,7 @@
     <div id="element" style="font-size: 12px;">
 
         <page_header>
-            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;">
 
 
@@ -543,7 +543,7 @@
         ?>
 
         <page_header>
-            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;">
 
 
@@ -782,7 +782,7 @@
     <div id="element" style="font-size: 12px;">
 
         <page_header>
-            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;">
 
 
@@ -979,7 +979,7 @@
     <div id="element" style="font-size: 12px;">
 
         <page_header>
-            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;">
 
 
@@ -1190,7 +1190,7 @@
 
     <div id="element" style="font-size: 12px;">
         <page_header>
-            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; " src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;">
 
 
@@ -1361,7 +1361,7 @@
 
     <div id="element" style="font-size: 12px; margin-left: -17px;">
         <div style="background-color: #DCE6F1; border: 3px solid #145FA4;">
-            <img width="70" height="70" style="float: left; margin-top: 12px;" src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; margin-top: 12px;" src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;  margin-top: 12px;">
 
 
@@ -1623,7 +1623,7 @@
     <!-- KWITANSI -->
     <div id="element" style="font-size: 12px; margin-left: -17px;">
         <div style="background-color: #DCE6F1; border: 3px solid #145FA4;">
-            <img width="70" height="70" style="float: left; margin-top: 12px;" src="<?php echo WRITEPATH . 'files/' . $model->getSetting(5)->content; ?>">
+            <img width="70" height="70" style="float: left; margin-top: 12px;" src="<?php echo WRITEPATH . 'files/setting/' . $model->getSetting(5)->content; ?>">
             <div align="center" style="margin-right: 0px; margin-left: -170px;  margin-top: 12px;">
 
 
