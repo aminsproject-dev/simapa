@@ -202,6 +202,7 @@
                                 <li class="nav-item-divider"></li>
                                 <li class="nav-item">
                                     <a href="<?= base_url('marketing/ekatalog'); ?>" class="nav-link <?= isset($active_ekatalog) ? $active_ekatalog : ''; ?>">Data Ekatalog </a>
+                                    <a href="<?= base_url('bo/pekerja') ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">Data Pekerja</a>
                                 </li>
 
                             </ul>
