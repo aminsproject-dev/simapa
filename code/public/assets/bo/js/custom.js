@@ -29,21 +29,73 @@ const SweetAlert = (function () {
       },
     });
 
-    //
-    // Contextual alerts
-    //
-
     const swalSuccessElementCustom = document.querySelector(
-      "#sweet_success_custom"
+      "#sweet_success_custom",
     );
+
     if (swalSuccessElementCustom) {
-      var successMessage = $("#sweet_success_custom").data("message");
+      const rawMessage = $("#sweet_success_custom").data("message");
+      const successMessage = normalizeMessage(rawMessage);
+
       swalInit.fire({
         title: "Berhasil!",
         text: successMessage,
         icon: "success",
       });
     }
+
+    const swalErrorElementCustom = document.querySelector(
+      "#sweet_error_custom",
+    );
+
+    if (swalErrorElementCustom) {
+      const rawMessage = $("#sweet_error_custom").data("message");
+      const errorMessage = normalizeMessage(rawMessage);
+
+      swalInit.fire({
+        title: "Gagal!",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
+
+    function normalizeMessage(message) {
+      // Jika sudah object (karena jQuery auto-parse)
+      if (typeof message === "object") {
+        return Object.values(message).join("\n");
+      }
+
+      // Jika string JSON
+      try {
+        const parsed = JSON.parse(message);
+        if (Array.isArray(parsed)) {
+          return parsed.join("\n");
+        }
+        if (typeof parsed === "object") {
+          return Object.values(parsed).join("\n");
+        }
+        return parsed;
+      } catch (e) {
+        // String biasa
+        return message;
+      }
+    }
+
+    //
+    // Contextual alerts
+    //
+
+    // const swalSuccessElementCustom = document.querySelector(
+    //   "#sweet_success_custom"
+    // );
+    // if (swalSuccessElementCustom) {
+    //   var successMessage = $("#sweet_success_custom").data("message");
+    //   swalInit.fire({
+    //     title: "Berhasil!",
+    //     text: successMessage,
+    //     icon: "success",
+    //   });
+    // }
 
     // Warning Delete alert
     $(document).on("click", ".sweet_warning_custom", function (event) {
@@ -129,17 +181,17 @@ const SweetAlert = (function () {
     });
 
     // Gagal Alert
-    const swalErrorElementCustom = document.querySelector(
-      "#sweet_error_custom"
-    );
-    if (swalErrorElementCustom) {
-      var errorMessage = $("#sweet_error_custom").data("message");
-      swalInit.fire({
-        title: "Gagal!!",
-        text: errorMessage,
-        icon: "error",
-      });
-    }
+    // const swalErrorElementCustom = document.querySelector(
+    //   "#sweet_error_custom"
+    // );
+    // if (swalErrorElementCustom) {
+    //   var errorMessage = $("#sweet_error_custom").data("message");
+    //   swalInit.fire({
+    //     title: "Gagal!!",
+    //     text: errorMessage,
+    //     icon: "error",
+    //   });
+    // }
 
     // Success alert
     const swalSuccessElement = document.querySelector("#sweet_success");
@@ -226,13 +278,13 @@ const SweetAlert = (function () {
               swalInit.fire(
                 "Deleted!",
                 "Your file has been deleted.",
-                "success"
+                "success",
               );
             } else if (result.dismiss === swal.DismissReason.cancel) {
               swalInit.fire(
                 "Cancelled",
                 "Your imaginary file is safe :)",
-                "error"
+                "error",
               );
             }
           });
@@ -764,7 +816,7 @@ const FormWizard = (function () {
           required: "NIK harus diisi",
           minlength: jQuery.validator.format("NIK harus {0} karakter"),
           maxlength: jQuery.validator.format(
-            "NIK tidak boleh lebih {0} karakter"
+            "NIK tidak boleh lebih {0} karakter",
           ),
         },
       },
