@@ -43,6 +43,22 @@ $routes->group('/surat', [
     $routes->get('unarchive/(:segment)', 'SuratController::unarchive');
 });
 
+$routes->group('/pekerja', ['filter' => 'authGuard'], function ($routes) {
+    // Pekerja
+    $routes->get('/', 'Bo\PekerjaControllers::index');
+    $routes->get('export', 'Bo\PekerjaControllers::export');
+    $routes->get('import', 'Bo\PekerjaControllers::import');
+    $routes->post('import-save', 'Bo\PekerjaControllers::importSave');
+});
+
+$routes->group('/pengalaman', ['filter' => 'authGuard'], function ($routes) {
+    // Pengalaman
+    $routes->get('/', 'Bo\PengalamanPekerjaanControllers::index');
+    $routes->get('export', 'Bo\PengalamanPekerjaanControllers::export');
+    $routes->get('import', 'Bo\PengalamanPekerjaanControllers::import');
+    $routes->post('import-save', 'Bo\PengalamanPekerjaanControllers::importSave');
+});
+
 $routes->group('/marketing', [
     'filter' => 'authGuard',
     'namespace' => 'App\Controllers\Bo\Marketing',

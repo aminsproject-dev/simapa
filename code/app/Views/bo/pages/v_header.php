@@ -205,6 +205,16 @@
                         </li>
 
                         <li class="nav-item">
+                            <a href="<?= base_url('bo/pekerja'); ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">
+                                <i class="ph-address-book"></i>
+                                <span>
+                                    Data Pekerja
+                                </span>
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
                             <a href="<?= base_url('master/document'); ?>" class="nav-link <?= isset($active_document) ? $active_document : ''; ?>">
                                 <i class="ph-file-cloud"></i>
                                 <span>
