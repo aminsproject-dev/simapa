@@ -9,7 +9,6 @@ Menu :
 - desa
 - Status Kepegawaian
 - Jenis Tenaga Ahli
-- Kewarganegaraan
 - Bahasa
 - Pendidikan Akhir
 - KBLI
