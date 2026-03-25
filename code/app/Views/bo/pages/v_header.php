@@ -51,17 +51,15 @@
     <!-- /theme JS files -->
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
-
 </head>
 
 <body>
 
-    <?php if (session()->getFlashdata('success') !== null) { ?>
-        <div id="sweet_success_custom" data-message="<?= session()->getFlashdata('success'); ?>"></div>
-    <?php } elseif (session()->getFlashdata('error')) { ?>
-        <div id="sweet_error_custom" data-message='<?= session()->getFlashdata('error') ?>'></div>
-    <?php } ?>
+    <?php if ($success = session()->get('success')): ?>
+        <div id="sweet_success_custom" data-message='<?= esc(json_encode($success), 'attr') ?>'></div>
+    <?php elseif ($error = session()->get('error')): ?>
+        <div id="sweet_error_custom" data-message='<?= esc(json_encode($error), 'attr') ?>'></div>
+    <?php endif; ?>
 
     <div class="fixed-top">
         <!-- Main navbar -->
@@ -248,29 +246,49 @@
                                 <li class="nav-item">
                                     <a href="<?= base_url('master/employees'); ?>" class="nav-link <?= isset($active_employees) ? $active_employees : ''; ?>">Pegawai </a>
                                     <a href="<?= base_url('master/guarantee'); ?>" class="nav-link <?= isset($active_guarantee) ? $active_guarantee : ''; ?>">Sertifikat Garansi </a>
+                                    <a href="<?= base_url('master/employment-status'); ?>" class="nav-link <?= isset($active_employment_status) ? $active_employment_status : ''; ?>">Status Kepegawaian </a>
+                                    <a href="<?= base_url('master/type-expert'); ?>" class="nav-link <?= isset($active_type_expert) ? $active_type_expert : ''; ?>">Jenis Tenaga Ahli </a>
+
+                                <li class="nav-item nav-item-submenu <?= isset($open_region) ? $open_region : ''; ?>">
+                                    <a href="#" class="nav-link">
+                                        <i class="ph-globe-hemisphere-west"></i>
+                                        <span>Wilayah</span>
+                                    </a>
+                                    <ul class="nav-group-sub collapse <?= isset($show_region) ? $show_region : ''; ?>" data-submenu-title="Master">
+                                        <li class="nav-item">
+                                            <a href="<?= base_url('master/country'); ?>" class="nav-link <?= isset($active_country) ? $active_country : ''; ?>">Negara</a>
+                                            <a href="<?= base_url('master/province'); ?>" class="nav-link <?= isset($active_province) ? $active_province : ''; ?>">Provinsi</a>
+                                            <a href="<?= base_url('master/regency'); ?>" class="nav-link <?= isset($active_regency) ? $active_regency : ''; ?>">Kota/Kabupaten</a>
+                                            <a href="<?= base_url('master/district'); ?>" class="nav-link <?= isset($active_district) ? $active_district : ''; ?>">Kecamatan</a>
+                                            <a href="<?= base_url('master/village'); ?>" class="nav-link <?= isset($active_village) ? $active_village : ''; ?>">Desa</a>
+                                        </li>
+
+                                    </ul>
                                 </li>
 
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('users'); ?>" class="nav-link <?= isset($active_users) ? $active_users : ''; ?>">
-                                <i class="ph-users"></i>
-                                <span>
-                                    Pengguna
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('setting'); ?>" class="nav-link <?= isset($active_setting) ? $active_setting : ''; ?>">
-                                <i class="ph-gear-six"></i>
-                                <span>
-                                    Setting Web
-                                </span>
-                            </a>
                         </li>
 
+                    </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('users'); ?>" class="nav-link <?= isset($active_users) ? $active_users : ''; ?>">
+                            <i class="ph-users"></i>
+                            <span>
+                                Pengguna
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="<?= base_url('setting'); ?>" class="nav-link <?= isset($active_setting) ? $active_setting : ''; ?>">
+                            <i class="ph-gear-six"></i>
+                            <span>
+                                Setting Web
+                            </span>
+                        </a>
+                    </li>
 
-                        <!-- /layout -->
+
+                    <!-- /layout -->
                     </ul>
                 </div>
                 <!-- /main navigation -->
