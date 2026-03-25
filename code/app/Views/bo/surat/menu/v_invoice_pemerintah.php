@@ -195,7 +195,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('add')); ?>" method="post" name="autoSumForm">
+            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('add')); ?>" method="post" name="autoSumForm">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
 
@@ -293,7 +293,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_1"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_1"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_1" class="form-control" name="jumlah_1" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_1" id="satuan_1" class="select2 form-control">
+                                            <td><select name="satuan_1" id="satuan_1" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -308,7 +308,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_2"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_2"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_2" class="form-control" name="jumlah_2" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_2" id="satuan_2" class="select2 form-control">
+                                            <td><select name="satuan_2" id="satuan_2" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -323,7 +323,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_3"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_3"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_3" class="form-control" name="jumlah_3" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_3" id="satuan_3" class="select2 form-control">
+                                            <td><select name="satuan_3" id="satuan_3" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -338,7 +338,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_4"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_4"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_4" class="form-control" name="jumlah_4" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_4" id="satuan_4" class="select2 form-control">
+                                            <td><select name="satuan_4" id="satuan_4" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -353,7 +353,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_5"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_5"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_5" class="form-control" name="jumlah_5" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_5" id="satuan_5" class="select2 form-control">
+                                            <td><select name="satuan_5" id="satuan_5" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -368,7 +368,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_6"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_6"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_6" class="form-control" name="jumlah_6" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_6" id="satuan_6" class="select2 form-control">
+                                            <td><select name="satuan_6" id="satuan_6" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -383,7 +383,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_7"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_7"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_7" class="form-control" name="jumlah_7" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_7" id="satuan_7" class="select2 form-control">
+                                            <td><select name="satuan_7" id="satuan_7" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -398,7 +398,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_8"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_8"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_8" class="form-control" name="jumlah_8" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_8" id="satuan_8" class="select2 form-control">
+                                            <td><select name="satuan_8" id="satuan_8" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -413,7 +413,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_9"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_9"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_9" class="form-control" name="jumlah_9" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_9" id="satuan_9" class="select2 form-control">
+                                            <td><select name="satuan_9" id="satuan_9" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -428,7 +428,7 @@
                                             <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_10"></td>
                                             <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_10"></td>
                                             <td><input type="text" style="text-align: center;" id="jumlah_10" class="form-control" name="jumlah_10" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                            <td><select name="satuan_10" id="satuan_10" class="select2 form-control">
+                                            <td><select name="satuan_10" id="satuan_10" class="select-search form-control">
                                                     <option value="">Pilih</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
@@ -498,7 +498,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
 
                         <div class="row">
                             <div class="col-lg-12">
-                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
+                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
                             </div>
                         </div>
 
@@ -520,7 +520,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('uploadScan')); ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('uploadScan')); ?>" method="post" enctype="multipart/form-data">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -592,7 +592,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('edit')); ?>" method="post">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('edit')); ?>" method="post">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -695,7 +695,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_1" value="<?= $row_isiSurat->no_1; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_1" value="<?= $row_isiSurat->nama_barang_1; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_1" class="form-control" name="jumlah_1" value="<?= $row_isiSurat->jumlah_1; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_1" id="satuan_1" class="select2 form-control">
+                                                    <td><select name="satuan_1" id="satuan_1" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_1 == $satuan->nama_satuan) { ?>
@@ -714,7 +714,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_2" value="<?= $row_isiSurat->no_2; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_2" value="<?= $row_isiSurat->nama_barang_2; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_2" class="form-control" name="jumlah_2" value="<?= $row_isiSurat->jumlah_2; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_2" id="satuan_2" class="select2 form-control">
+                                                    <td><select name="satuan_2" id="satuan_2" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_2 == $satuan->nama_satuan) { ?>
@@ -733,7 +733,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_3" value="<?= $row_isiSurat->no_3; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_3" value="<?= $row_isiSurat->nama_barang_3; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_3" class="form-control" name="jumlah_3" value="<?= $row_isiSurat->jumlah_3; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_3" id="satuan_3" class="select2 form-control">
+                                                    <td><select name="satuan_3" id="satuan_3" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_3 == $satuan->nama_satuan) { ?>
@@ -752,7 +752,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_4" value="<?= $row_isiSurat->no_4; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_4" value="<?= $row_isiSurat->nama_barang_4; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_4" class="form-control" name="jumlah_4" value="<?= $row_isiSurat->jumlah_4; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_4" id="satuan_4" class="select2 form-control">
+                                                    <td><select name="satuan_4" id="satuan_4" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_4 == $satuan->nama_satuan) { ?>
@@ -771,7 +771,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_5" value="<?= $row_isiSurat->no_5; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_5" value="<?= $row_isiSurat->nama_barang_5; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_5" class="form-control" name="jumlah_5" value="<?= $row_isiSurat->jumlah_5; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_5" id="satuan_5" class="select2 form-control">
+                                                    <td><select name="satuan_5" id="satuan_5" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_5 == $satuan->nama_satuan) { ?>
@@ -790,7 +790,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_6" value="<?= $row_isiSurat->no_6; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_6" value="<?= $row_isiSurat->nama_barang_6; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_6" class="form-control" name="jumlah_6" value="<?= $row_isiSurat->jumlah_6; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_6" id="satuan_6" class="select2 form-control">
+                                                    <td><select name="satuan_6" id="satuan_6" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_6 == $satuan->nama_satuan) { ?>
@@ -809,7 +809,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_7" value="<?= $row_isiSurat->no_7; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_7" value="<?= $row_isiSurat->nama_barang_7; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_7" class="form-control" name="jumlah_7" value="<?= $row_isiSurat->jumlah_7; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_7" id="satuan_7" class="select2 form-control">
+                                                    <td><select name="satuan_7" id="satuan_7" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_7 == $satuan->nama_satuan) { ?>
@@ -828,7 +828,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_8" value="<?= $row_isiSurat->no_8; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_8" value="<?= $row_isiSurat->nama_barang_8; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_8" class="form-control" name="jumlah_8" value="<?= $row_isiSurat->jumlah_8; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_8" id="satuan_8" class="select2 form-control">
+                                                    <td><select name="satuan_8" id="satuan_8" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_8 == $satuan->nama_satuan) { ?>
@@ -847,7 +847,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_9" value="<?= $row_isiSurat->no_9; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_9" value="<?= $row_isiSurat->nama_barang_9; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_9" class="form-control" name="jumlah_9" value="<?= $row_isiSurat->jumlah_9; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_9" id="satuan_9" class="select2 form-control">
+                                                    <td><select name="satuan_9" id="satuan_9" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_9 == $satuan->nama_satuan) { ?>
@@ -866,7 +866,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                     <td><input type="text" style="text-align: center;" id="nama" class="form-control" placeholder="No" name="no_10" value="<?= $row_isiSurat->no_10; ?>"></td>
                                                     <td><input type="text" id="nama" class="form-control" placeholder="Nama Barang" name="nama_barang_10" value="<?= $row_isiSurat->nama_barang_10; ?>"></td>
                                                     <td><input type="text" style="text-align: center;" id="jumlah_10" class="form-control" name="jumlah_10" value="<?= $row_isiSurat->jumlah_10; ?>" onFocus="startCalc();" onBlur="stopCalc();" /></td>
-                                                    <td><select name="satuan_10" id="satuan_10" class="select2 form-control">
+                                                    <td><select name="satuan_10" id="satuan_10" class="select-search form-control">
                                                             <option value="">Pilih</option>
                                                             <?php foreach ($dt_satuan as $satuan) {
                                                                 if ($row_isiSurat->satuan_10 == $satuan->nama_satuan) { ?>
