@@ -205,18 +205,22 @@
                         </li>
 
                         <li class="nav-item">
+                            <a href="<?= base_url('bo/pekerja'); ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">
+                                <i class="ph-address-book"></i>
+                                <span>
+                                    Data Pekerja
+                                </span>
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
                             <a href="<?= base_url('master/document'); ?>" class="nav-link <?= isset($active_document) ? $active_document : ''; ?>">
                                 <i class="ph-file-cloud"></i>
                                 <span>
                                     Dokumen Penting
                                 </span>
                             </a>
-                            <ul class="nav-group-sub collapse <?= isset($show_marketing) ? $show_marketing : ''; ?>" data-submenu-title="Marketing">
-                                <li class="nav-item-divider"></li>
-                                <li class="nav-item">
-                                    <a href="<?= base_url('marketing/ekatalog'); ?>" class="nav-link <?= isset($active_ekatalog) ? $active_ekatalog : ''; ?>">Data Ekatalog </a>
-                                    <a href="<?= base_url('bo/pekerja') ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">Data Pekerja</a>
-                                </li>
 
                         </li>
 
