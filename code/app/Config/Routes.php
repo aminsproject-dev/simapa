@@ -45,18 +45,16 @@ $routes->group('/surat', [
 
 $routes->group('/pekerja', ['filter' => 'authGuard'], function ($routes) {
     // Pekerja
-    $routes->get('/', 'Bo\PekerjaControllers::index');
-    $routes->get('export', 'Bo\PekerjaControllers::export');
-    $routes->get('import', 'Bo\PekerjaControllers::import');
-    $routes->post('import-save', 'Bo\PekerjaControllers::importSave');
+    $routes->get('', 'Bo\PekerjaController::index');
+    $routes->get('export', 'Bo\PekerjaController::export');
+    $routes->post('import-save', 'Bo\PekerjaController::importSave');
 });
 
 $routes->group('/pengalaman', ['filter' => 'authGuard'], function ($routes) {
     // Pengalaman
-    $routes->get('/', 'Bo\PengalamanPekerjaanControllers::index');
-    $routes->get('export', 'Bo\PengalamanPekerjaanControllers::export');
-    $routes->get('import', 'Bo\PengalamanPekerjaanControllers::import');
-    $routes->post('import-save', 'Bo\PengalamanPekerjaanControllers::importSave');
+    $routes->get('', 'Bo\PengalamanPekerjaanController::index');
+    $routes->get('export', 'Bo\PengalamanPekerjaanController::export');
+    $routes->post('import-save', 'Bo\PengalamanPekerjaanController::importSave');
 });
 
 $routes->group('/marketing', [

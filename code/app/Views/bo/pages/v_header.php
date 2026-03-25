@@ -205,10 +205,20 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href="<?= base_url('bo/pekerja'); ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">
+                            <a href="<?= base_url('pekerja'); ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">
                                 <i class="ph-address-book"></i>
                                 <span>
                                     Data Pekerja
+                                </span>
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<?= base_url('pengalaman'); ?>" class="nav-link <?= isset($active_pengalaman) ? $active_pengalaman : ''; ?>">
+                                <i class="ph-address-book"></i>
+                                <span>
+                                    Data Pengalaman
                                 </span>
                             </a>
 
