@@ -99,6 +99,49 @@ $routes->group('/master', [
         $routes->post('update/(:segment)', 'GuaranteeController::update/$1');
         $routes->get('delete/(:segment)', 'GuaranteeController::delete/$1');
     });
+
+    $routes->group('country', function ($routes) {
+        $routes->get('', 'CountryController::index');
+        $routes->post('add', 'CountryController::add');
+        $routes->post('update/(:segment)', 'CountryController::update/$1');
+        $routes->get('delete/(:segment)', 'CountryController::delete/$1');
+    });
+    $routes->group('province', function ($routes) {
+        $routes->get('', 'ProvinceController::index');
+        $routes->post('add', 'ProvinceController::add');
+        $routes->post('update/(:segment)', 'ProvinceController::update/$1');
+        $routes->get('delete/(:segment)', 'ProvinceController::delete/$1');
+    });
+    $routes->group('regency', function ($routes) {
+        $routes->get('', 'RegencyController::index');
+        $routes->post('add', 'RegencyController::add');
+        $routes->post('update/(:segment)', 'RegencyController::update/$1');
+        $routes->get('delete/(:segment)', 'RegencyController::delete/$1');
+    });
+    $routes->group('district', function ($routes) {
+        $routes->get('', 'DistrictController::index');
+        $routes->post('add', 'DistrictController::add');
+        $routes->post('update/(:segment)', 'DistrictController::update/$1');
+        $routes->get('delete/(:segment)', 'DistrictController::delete/$1');
+    });
+    $routes->group('village', function ($routes) {
+        $routes->get('', 'VillageController::index');
+        $routes->post('add', 'VillageController::add');
+        $routes->post('update/(:segment)', 'VillageController::update/$1');
+        $routes->get('delete/(:segment)', 'VillageController::delete/$1');
+    });
+    $routes->group('employment-status', function ($routes) {
+        $routes->get('', 'EmploymentStatusController::index');
+        $routes->post('add', 'EmploymentStatusController::add');
+        $routes->post('update/(:segment)', 'EmploymentStatusController::update/$1');
+        $routes->get('delete/(:segment)', 'EmploymentStatusController::delete/$1');
+    });
+    $routes->group('type-expert', function ($routes) {
+        $routes->get('', 'TypeExpertController::index');
+        $routes->post('add', 'TypeExpertController::add');
+        $routes->post('update/(:segment)', 'TypeExpertController::update/$1');
+        $routes->get('delete/(:segment)', 'TypeExpertController::delete/$1');
+    });
 });
 
 $routes->group('/users', [
