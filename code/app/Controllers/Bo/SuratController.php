@@ -3,19 +3,31 @@
 namespace App\Controllers\Bo;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\JabatanModel;
+use App\Models\MenuSuratModel;
+use App\Models\SuratModel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Spipu\Html2Pdf\Html2Pdf;
 
-class Surat extends BaseController
+class SuratController extends BaseController
 {
+    protected $menuSuratModel;
+    protected $suratModel;
+    protected $jabatanModel;
+    public function __construct()
+    {
+        $this->menuSuratModel = new MenuSuratModel();
+        $this->suratModel = new SuratModel();
+        $this->jabatanModel = new JabatanModel();
+    }
+
     public function surat()
     {
         $data = [
             'title' => 'Surat Sisuro',
             'active_surat' => 'active',
-            'dt_menuSurat' => $this->modelBo->getAllMenuSurat(),
+            'dt_menuSurat' => $this->menuSuratModel->where('kode is not null')->findAll(),
         ];
 
         echo view('bo/pages/v_header', $data);
@@ -25,14 +37,14 @@ class Surat extends BaseController
 
     public function menuSurat()
     {
-        $menuSurat = $this->modelBo->getAllMenuSurat();
+        $menuSurat = $this->menuSuratModel->where('kode is not null')->findAll();
 
         $page = $this->request->getGet('page');
-        $jns = base64_decode($this->request->getGet('jns'));
-        $action = base64_decode($this->request->getGet('action'));
+        $jns = decrypt_data($this->request->getGet('jns'));
+        $action = decrypt_data($this->request->getGet('action'));
 
         foreach ($menuSurat as $row) {
-            $curMenu = explode('=', $row->url);
+            $curMenu = explode('=', $row['url']);
             if ($page == $curMenu[1]) {
                 return $this->$page($page, $jns, $action, $row);
             }
@@ -43,16 +55,16 @@ class Surat extends BaseController
     {
         switch ($action) {
             case 'view':
-                $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
+                $dt_surat = $this->suratModel->getAllSurat($jns);
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
-                    'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
-                    'nomor_surat' => $this->modelBo->kodeSurat() . '/' . $this->modelBo->lastNumber($jns) . '/SRT/' . $jns . '/APTI/' . $this->getRomawi(DATE('m')) . '/' . date('Y'),
+                    'dt_arsip' => $this->suratModel->getAllSuratArsip($jns),
+                    'nomor_surat' => $this->menuSuratModel->kodeSurat() . '/' . $this->suratModel->lastNumber($jns) . '/SRT/' . $jns . '/APTI/' . $this->getRomawi(DATE('m')) . '/' . date('Y'),
                     'qrgen' => $this->randomString(5),
-                    'dt_jabatan' => $this->model->getAllData('tb_jabatan'),
+                    'dt_jabatan' => $this->jabatanModel->findAll(),
                     'page' => $page,
                     'jns' => $jns,
                 ];
@@ -74,23 +86,23 @@ class Surat extends BaseController
                 $isiSurat = json_encode($isi);
                 $xttd = json_encode($this->chooseTtd($this->request->getPost('mengetahui')));
 
-                $insertData = [
-                    'jenis_surat' => $jns,
-                    'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
-                    'tanggal' => date('Y-m-d'),
-                    'qrgen' => $this->request->getPost('qrgen'),
-                    'isi_surat' => $this->gantikutip($isiSurat),
-                    'tanda_tangan' => $xttd,
-                    'createdon' => date('Y-m-d H:i:s'),
-                    'createdby' => session()->get('fullname'),
-                    'rowstatus' => 1,
-                ];
+                $data = $this->request->getPost();
+                $data['jenis_surat'] = $jns;
+                $data['no_surat'] = $data['nomor_surat'];
+                $data['nama_surat'] = $menu['nama_menu'];
+                $data['tanggal'] = date('Y-m-d');
+                $data['isi_surat'] = $this->gantikutip($isiSurat);
+                $data['tanda_tangan'] = $xttd;
+                $data['createdon'] = date('Y-m-d H:i:s');
+                $data['createdby'] = session()->get('fullname');
+                $data['rowstatus'] = 1;
 
-                $this->generateQrcode($this->request->getPost('qrgen'));
-                $this->model->insertData('tb_surat', $insertData);
+                $this->generateQrcode($data['qrgen']);
+                if (!$this->suratModel->insert($data)) {
+                    return redirect()->back()->withInput()->with('error', $this->suratModel->errors());
+                }
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menu-surat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
                 break;
             case 'edit':
                 $id['id_surat'] = $this->request->getPost('id_surat');
@@ -113,7 +125,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -121,7 +133,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
                 break;
             case 'cetakSurat':
                 $id['id_surat'] = $this->request->getGet('idx');
@@ -209,12 +221,10 @@ class Surat extends BaseController
                             );
                             $this->model->updateData('tb_surat', $docuploadfile[$i], $id);
                         }
-                    } else {
-                        // No file was uploaded
                     }
                 }
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'File berhasil di upload');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'File berhasil di upload');
 
                 break;
         }
@@ -228,7 +238,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -259,7 +269,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -272,7 +282,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -294,7 +304,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -302,7 +312,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
                 break;
 
             case 'cetakSurat':
@@ -350,7 +360,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -381,7 +391,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -394,7 +404,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -418,7 +428,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -426,7 +436,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -494,7 +504,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -526,7 +536,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -539,7 +549,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
             case 'edit':
@@ -562,7 +572,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -570,7 +580,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -618,7 +628,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -651,7 +661,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -664,7 +674,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
             case 'edit':
@@ -689,7 +699,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -697,7 +707,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -745,7 +755,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -798,7 +808,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -811,7 +821,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -858,7 +868,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -866,7 +876,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -916,7 +926,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -1039,7 +1049,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1053,7 +1063,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -1159,7 +1169,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1168,7 +1178,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -1247,7 +1257,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -1354,7 +1364,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1367,7 +1377,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -1465,7 +1475,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1474,7 +1484,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -1526,7 +1536,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -1626,7 +1636,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1639,7 +1649,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
             case 'edit':
@@ -1730,7 +1740,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1739,7 +1749,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -1789,7 +1799,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -1846,7 +1856,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1859,7 +1869,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
             case 'edit':
@@ -1908,7 +1918,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -1917,7 +1927,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -1968,7 +1978,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -2003,7 +2013,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2016,7 +2026,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
             case 'edit':
@@ -2042,7 +2052,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2051,7 +2061,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
             case 'cetakSurat':
@@ -2126,7 +2136,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -2187,7 +2197,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2200,7 +2210,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -2253,7 +2263,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2262,7 +2272,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -2314,7 +2324,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -2352,7 +2362,7 @@ class Surat extends BaseController
 
                 if (!$this->validate($rules)) {
                     foreach ($this->validator->getErrors() as $e) {
-                        return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('error', $e);
+                        return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('error', $e);
                     }
                 }
 
@@ -2455,7 +2465,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2468,7 +2478,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -2576,7 +2586,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2585,7 +2595,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -2637,7 +2647,7 @@ class Surat extends BaseController
                 $dt_surat = $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 1, 'arsip' => null])->getResultArray();
 
                 $data = [
-                    'title' => (!empty($menu)) ? $menu->nama_menu : 'Surat Sisuro',
+                    'title' => (!empty($menu)) ? $menu['nama_menu'] : 'Surat Sisuro',
                     'active_surat' => 'active',
                     'dt_surat' => $dt_surat,
                     'dt_arsip' => $this->model->getSelectedData('tb_surat', ['jenis_surat' => $jns, 'rowstatus' => 2, 'arsip' => null])->getResultArray(),
@@ -2743,7 +2753,7 @@ class Surat extends BaseController
                 $insertData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2756,7 +2766,7 @@ class Surat extends BaseController
                 $this->generateQrcode($this->request->getPost('qrgen'));
                 $this->model->insertData('tb_surat', $insertData);
 
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di tambah');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di tambah');
 
                 break;
 
@@ -2851,7 +2861,7 @@ class Surat extends BaseController
                 $updateData = [
                     'jenis_surat' => $jns,
                     'no_surat' => $this->request->getPost('nomor_surat'),
-                    'nama_surat' => $menu->nama_menu,
+                    'nama_surat' => $menu['nama_menu'],
                     'tanggal' => date('Y-m-d'),
                     'qrgen' => $this->request->getPost('qrgen'),
                     'isi_surat' => $this->gantikutip($isiSurat),
@@ -2860,7 +2870,7 @@ class Surat extends BaseController
                 ];
 
                 $this->model->updateData('tb_surat', $updateData, $id);
-                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'Data berhasil di edit');
+                return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'Data berhasil di edit');
 
                 break;
 
@@ -2982,7 +2992,7 @@ class Surat extends BaseController
             }
         }
 
-        return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('view'))->with('success', 'File berhasil di upload');
+        return redirect()->to('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('view'))->with('success', 'File berhasil di upload');
     }
 
     private function chooseTtd($mengetahui)

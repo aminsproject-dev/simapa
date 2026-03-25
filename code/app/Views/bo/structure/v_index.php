@@ -11,15 +11,22 @@
         text-align: center;
     }
 
-    /* .orgchart .node {
+    .orgchart .node {
         display: flex;
-        max-width: 150px;
+        width: 200px;
         flex-direction: column;
         align-items: center;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    } */
+    }
+
+    .orgchart .title,
+    .orgchart .content {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
 
     .orgchart {
         background: #fff;
@@ -89,7 +96,7 @@
                     <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
                         <h5 class="py-sm-2 my-sm-1"><?= $title; ?></h5>
                         <div class="mt-2 mt-sm-0 ms-sm-auto">
-                            <a href="<?= base_url('pegawai'); ?>" class="btn btn-primary fw-bold">
+                            <a href="<?= base_url('master/employees'); ?>" class="btn btn-primary fw-bold">
                                 <i class="ph-database me-1"></i>
                                 Kelola Data
                             </a>
@@ -125,16 +132,16 @@
         $(function() {
 
             var datascource = {
-                'name': '<?= $row_direktur->nama; ?>',
-                'title': '<?= $row_direktur->nama_pegawai; ?>',
+                'name': '<?= isset($row_direktur['nama']) ? $row_direktur['nama'] : 'Tidak ditemukan'; ?>',
+                'title': '<?= isset($row_direktur['nama_pegawai']) ? $row_direktur['nama_pegawai'] : 'Tidak ditemukan'; ?>',
                 'children': [
-                    <?php foreach ($dt_pegawai as $pegawai) {
-                        if ($pegawai->jabatan == 1) {
+                    <?php foreach ($dt_employees as $employee) {
+                        if ($employee['jabatan'] == 1) {
                             continue;
                         } ?> {
-                            'name': '<?= $pegawai->nama; ?>',
-                            'title': '<?= $pegawai->nama_pegawai; ?>',
-                            'classname': '<?= $pegawai->warna; ?>',
+                            'name': '<?= $employee['nama']; ?>',
+                            'title': '<?= $employee['nama_pegawai']; ?>',
+                            'classname': '<?= $employee['warna']; ?>',
                         },
                     <?php } ?>
                 ]

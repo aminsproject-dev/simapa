@@ -5,62 +5,109 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Bo\Auth::login');
-$routes->get('/logout', 'Bo\Auth::logout');
+$routes->get('/', 'Bo\AuthController::login');
+$routes->get('/logout', 'Bo\AuthController::logout');
 $routes->get('/showLogoApp', 'Bo\Dashboard::showLogoApp');
 
 $routes->group('/auth', function ($routes) {
-    $routes->get('loginbo', 'Bo\Auth::login');
-    $routes->post('proseslogin', 'Bo\Auth::proseslogin');
+    $routes->get('loginbo', 'Bo\AuthController::login');
+    $routes->post('proseslogin', 'Bo\AuthController::proseslogin');
 });
 
-$routes->group('/dashboard', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('', 'Bo\Dashboard::index');
+$routes->group('/dashboard', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'DashboardController::index');
 });
 
-$routes->group('/surat', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('', 'Bo\Surat::surat');
-    $routes->get('menuSurat', 'Bo\Surat::menuSurat');
-    $routes->post('menuSurat', 'Bo\Surat::menuSurat');
-    $routes->get('deleteSurat/(:segment)', 'Bo\Surat::deleteSurat');
-    $routes->get('lihatScanSurat/(:segment)', 'Bo\Surat::lihatScanSurat');
-    $routes->get('archive/(:segment)', 'Bo\Surat::archive');
-    $routes->get('unarchive/(:segment)', 'Bo\Surat::unarchive');
+$routes->group('/structure', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'StructureController::index');
 });
 
-$routes->group('/marketing', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('ekatalog', 'Bo\Marketing::ekatalog');
-    $routes->post('ekatalogAdd', 'Bo\Marketing::ekatalogAdd');
-    $routes->post('ekatalogEdit', 'Bo\Marketing::ekatalogEdit');
-    $routes->get('ekatalogDelete/(:segment)', 'Bo\Marketing::ekatalogDelete');
+$routes->group('/surat', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'SuratController::surat');
+    $routes->get('menuSurat', 'SuratController::menuSurat');
+    $routes->post('menuSurat', 'SuratController::menuSurat');
+    $routes->get('menu-surat', 'SuratController::menuSurat');
+    $routes->post('menu-surat', 'SuratController::menuSurat');
+    $routes->get('deleteSurat/(:segment)', 'SuratController::deleteSurat');
+    $routes->get('lihatScanSurat/(:segment)', 'SuratController::lihatScanSurat');
+    $routes->get('archive/(:segment)', 'SuratController::archive');
+    $routes->get('unarchive/(:segment)', 'SuratController::unarchive');
 });
 
-$routes->group('/master', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('pegawai', 'Bo\Master::pegawai');
-    $routes->post('pegawaiAdd', 'Bo\Master::pegawaiAdd');
-    $routes->post('pegawaiEdit', 'Bo\Master::pegawaiEdit');
-    $routes->get('pegawaiDelete/(:segment)', 'Bo\Master::pegawaiDelete');
+$routes->group('/marketing', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo\Marketing',
+], function ($routes) {
 
+    $routes->group('ekatalog', function ($routes) {
+        $routes->get('', 'EkatalogController::index');
+        $routes->post('add', 'EkatalogController::add');
+        $routes->post('update/(:segment)', 'EkatalogController::update/$1');
+        $routes->get('delete/(:segment)', 'EkatalogController::delete/$1');
+    });
+});
+
+$routes->group('/master', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo\Master',
+], function ($routes) {
     $routes->get('struktur', 'Bo\Master::struktur');
 
-    $routes->get('dokumen', 'Bo\Master::dokumen');
-    $routes->get('dokumenShow', 'Bo\Master::dokumenShow');
-    $routes->post('dokumenAdd', 'Bo\Master::dokumenAdd');
-    $routes->get('dokumenDelete/(:segment)', 'Bo\Master::dokumenDelete');
+    $routes->group('employees', function ($routes) {
+        $routes->get('', 'EmployeesController::index');
+        $routes->post('add', 'EmployeesController::add');
+        $routes->post('update/(:segment)', 'EmployeesController::update/$1');
+        $routes->get('delete/(:segment)', 'EmployeesController::delete/$1');
+    });
 
-    $routes->get('garansi', 'Bo\Master::garansi');
-    $routes->post('garansiAdd', 'Bo\Master::garansiAdd');
-    $routes->post('garansiEdit', 'Bo\Master::garansiEdit');
-    $routes->get('garansiDelete/(:segment)', 'Bo\Master::garansiDelete');
+    $routes->group('document', function ($routes) {
+        $routes->get('', 'DocumentController::index');
+        $routes->get('dokumenShow', 'Bo\Master::dokumenShow');
+        $routes->post('add', 'DocumentController::add');
+        $routes->post('update/(:segment)', 'DocumentController::update/$1');
+        $routes->get('delete/(:segment)', 'DocumentController::delete/$1');
+    });
+
+    $routes->group('guarantee', function ($routes) {
+        $routes->get('', 'GuaranteeController::index');
+        $routes->post('add', 'GuaranteeController::add');
+        $routes->post('update/(:segment)', 'GuaranteeController::update/$1');
+        $routes->get('delete/(:segment)', 'GuaranteeController::delete/$1');
+    });
 });
 
-$routes->group('/setting', ['filter' => 'authGuard'], function ($routes) {
-    $routes->get('', 'Bo\Dashboard::setting');
-    $routes->post('prosesSetting', 'Bo\Dashboard::prosesSetting');
-    $routes->post('prosesSettingKode', 'Bo\Dashboard::prosesSettingKode');
+$routes->group('/users', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'UsersController::index');
+    $routes->post('create', 'UsersController::create');
+    $routes->post('update/(:segment)', 'UsersController::update/$1');
+    $routes->get('delete/(:segment)', 'UsersController::delete/$1');
+});
 
-    $routes->get('pengguna', 'Bo\Dashboard::pengguna');
-    $routes->post('penggunaAdd', 'Bo\Dashboard::penggunaAdd');
-    $routes->post('penggunaEdit', 'Bo\Dashboard::penggunaEdit');
-    $routes->get('penggunaDelete/(:segment)', 'Bo\Dashboard::penggunaDelete');
+$routes->group('/setting', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'SettingController::index');
+
+    $routes->post('update/(:segment)', 'SettingController::update/$1');
+    $routes->post('update-kode/(:segment)', 'SettingController::updateKode/$1');
+});
+
+$routes->group('/files', ['filter' => 'authGuard'], function ($routes) {
+    $routes->get('document/(:segment)', 'FilesController::document/$1');
+});
+$routes->group('/files', function ($routes) {
+    $routes->get('logo', 'FilesController::logo');
 });
