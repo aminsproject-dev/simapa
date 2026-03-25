@@ -199,7 +199,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('add')); ?>" method="post" name="autoSumForm">
+            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('add')); ?>" method="post" name="autoSumForm">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
 
@@ -223,7 +223,7 @@
                                     <div class="mb-2">
                                         <label class="col-form-label">Mengetahui<span class="text-danger">*</span></label>
                                         <select class="form-control select-search" id="mengetahui" name="mengetahui" required>
-                                            <option>-- Silahkan Pilih --</option>
+                                            <option value="">-- Silahkan Pilih --</option>
                                             <?php foreach ($dt_jabatan as $jabatan) { ?>
                                                 <option value="<?= $jabatan->id_jabatan; ?>"><?= $jabatan->nama; ?></option>
                                             <?php } ?>
@@ -243,7 +243,7 @@
                                     <div class="mb-2">
                                         <label class="col-form-label">Tanda Tangan<span class="text-danger">*</span></label>
                                         <select class="form-control select-search" id="img_ttd" name="img_ttd" required>
-                                            <option>-- Silahkan Pilih --</option>
+                                            <option value="">-- Silahkan Pilih --</option>
                                             <option value="1">Ya</option>
                                             <option value="0">Tidak</option>
                                         </select>
@@ -485,7 +485,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
 
                         <div class="row">
                             <div class="col-lg-12">
-                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
+                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
                             </div>
                         </div>
 
@@ -507,7 +507,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('uploadScan')); ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('uploadScan')); ?>" method="post" enctype="multipart/form-data">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -579,7 +579,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('edit')); ?>" method="post">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('edit')); ?>" method="post">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -604,7 +604,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                             <div class="mb-2">
                                                 <label class="col-form-label">Mengetahui<span class="text-danger">*</span></label>
                                                 <select class="form-control select-search" id="mengetahui" name="mengetahui" required>
-                                                    <option>-- Silahkan Pilih --</option>
+                                                    <option value="">-- Silahkan Pilih --</option>
                                                     <?php
                                                     $isiTtd = json_decode($row['tanda_tangan']);
                                                     foreach ($dt_jabatan as $jabatan) {
@@ -630,7 +630,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                             <div class="mb-2">
                                                 <label class="col-form-label">Tanda Tangan<span class="text-danger">*</span></label>
                                                 <select class="form-control select-search" id="img_ttd" name="img_ttd" required>
-                                                    <option>-- Silahkan Pilih --</option>
+                                                    <option value="">-- Silahkan Pilih --</option>
                                                     <option value="1" <?= $row_isiSurat->img_ttd == '1' ? 'selected' : ''; ?>>Ya</option>
                                                     <option value="0" <?= $row_isiSurat->img_ttd == '0' ? 'selected' : ''; ?>>Tidak</option>
                                                 </select>
@@ -655,7 +655,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                         <div class="col-lg-12">
                                             <div class="mb-2">
                                                 <label class="col-form-label">Noted<span class="text-danger">*</span></label>
-                                                <textarea name="noted" id="noted" class="form-control ckeditor_classic" rows="4" cols="4"><?= base64_decode($row_isiSurat->noted); ?></textarea>
+                                                <textarea name="noted" id="noted" class="form-control ckeditor_classic" rows="4" cols="4"><?= $row_isiSurat->noted; ?></textarea>
                                             </div>
                                         </div>
 

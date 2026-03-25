@@ -3,9 +3,16 @@
 namespace App\Controllers\Bo;
 
 use App\Controllers\BaseController;
+use App\Models\UsersModel;
 
-class Auth extends BaseController
+class AuthController extends BaseController
 {
+    protected $usersModel;
+    public function __construct()
+    {
+        $this->usersModel = new UsersModel();
+    }
+
     public function login()
     {
         $data = [
@@ -19,6 +26,10 @@ class Auth extends BaseController
 
     public function proseslogin()
     {
+        if (!verify_turnstile($this->request)) {
+            return redirect()->to('auth/loginbo')->with('error', 'Cloudflare Turnstile Invalid!')->with('errors.cf-turnstile-response', 'Cloudflare error!');
+        }
+
         $rules = [
             'username' => [
                 'rules' => 'required',
@@ -65,26 +76,24 @@ class Auth extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
-        $sql = "SELECT * FROM tb_user a INNER JOIN tb_pegawai b ON a.id_pegawai=b.id_pegawai WHERE username =" . $this->db->escape($username) . " LIMIT 1";
-        $result = $this->db->query($sql);
-        $row = $result->getRow();
+        $row_user = $this->usersModel->getUserByUsername($username);
 
-        if ($result->getNumRows() === 1) {
-            if (password_verify($password, $row->password)) {
-                $session_data = [
-                    'user_id' => $row->id,
-                    'username' => $row->username,
-                    'fullname' => $row->nama_pegawai,
-                ];
-                $this->set_session($session_data);
-
-                return 'login_sukses';
-            } else {
-                return 'password_salah';
-            }
-        } else {
+        if (empty($row_user)) {
             return 'akun_tidak_ditemukan';
         }
+
+        if (!password_verify($password, $row_user['password'])) {
+            return 'password_salah';
+        }
+
+        $session_data = [
+            'user_id' => $row_user['id'],
+            'username' => $row_user['username'],
+            'fullname' => $row_user['nama_pegawai'],
+        ];
+        $this->set_session($session_data);
+
+        return 'login_sukses';
     }
 
     private function set_session($session_data)

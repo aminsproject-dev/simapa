@@ -376,10 +376,13 @@
         </div>
     </div>
     <div class="container">
-        <div class="bottom-right" style="color:black;"><strong><u><?php echo $row_ttd->nama; ?></u></strong> <br>
+        <div class="bottom-right" style="color:black;">
+            <strong> <u><?php echo $row_ttd->nama; ?></u> </strong>
+            <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <?php $row_ttd->jabatan;
-            echo ucfirst(strtolower($row_ttd->jabatan)); ?></div>
+            echo ucfirst(strtolower($row_ttd->jabatan)); ?>
+        </div>
         <img src="<?php
                     if ($row_isiSurat->img_ttd == 1) {
                         echo FCPATH . 'assets/bo/images/ttd_stampel_direktur.png';

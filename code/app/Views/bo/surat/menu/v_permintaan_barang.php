@@ -195,7 +195,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('add')); ?>" method="post">
+            <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('add')); ?>" method="post">
                 <?= csrf_field(); ?>
                 <div class="modal-body">
 
@@ -226,7 +226,7 @@
                                 <label class="col-lg-3 col-form-label text-lg-end">Kota Vendor<span class="text-danger">*</span></label>
                                 <div class="col-lg-9">
                                     <select class="form-control select-search" id="" name="kota_vendor" required>
-                                        <option>-- Silahkan Pilih --</option>
+                                        <option value="">-- Silahkan Pilih --</option>
                                         <?php foreach ($dt_kabupaten as $kabupaten) { ?>
                                             <option value="<?= $kabupaten->nama_kabupaten; ?>"><?= $kabupaten->nama_kabupaten; ?></option>
                                         <?php } ?>
@@ -269,7 +269,7 @@
                                 <label class="col-lg-3 col-form-label text-lg-end">Mengetahui<span class="text-danger">*</span></label>
                                 <div class="col-lg-9">
                                     <select class="form-control select-search" id="" name="mengetahui" required>
-                                        <option>-- Silahkan Pilih --</option>
+                                        <option value="">-- Silahkan Pilih --</option>
                                         <?php foreach ($dt_jabatan as $jabatan) { ?>
                                             <option value="<?= $jabatan->id_jabatan; ?>"><?= $jabatan->nama; ?></option>
                                         <?php } ?>
@@ -281,7 +281,7 @@
                                 <label class="col-lg-3 col-form-label text-lg-end">Tanda Tangan<span class="text-danger">*</span></label>
                                 <div class="col-lg-9">
                                     <select class="form-control select-search" id="img_ttd" name="img_ttd" required>
-                                        <option>-- Silahkan Pilih --</option>
+                                        <option value="">-- Silahkan Pilih --</option>
                                         <option value="1">Ya</option>
                                         <option value="0">Tidak</option>
                                     </select>
@@ -299,7 +299,7 @@
                                 <label class="col-lg-3 col-form-label text-lg-end">Bank Vendor<span class="text-danger">*</span></label>
                                 <div class="col-lg-9">
                                     <select class="form-control select-search" id="bank_vendor" name="bank_vendor" required>
-                                        <option>-- Silahkan Pilih --</option>
+                                        <option value="">-- Silahkan Pilih --</option>
                                         <?php foreach ($dt_bank as $bank) { ?>
                                             <option value="<?= $bank->nama_bank; ?>"><?= $bank->nama_bank; ?></option>
                                         <?php } ?>
@@ -372,7 +372,7 @@
                                     </div>
                                     <div class="col-2">
                                         <select class="form-control select-search" name="satuan[0]" id="satuan_0" required>
-                                            <option>Pilih Satuan</option>
+                                            <option value="">Pilih Satuan</option>
                                             <?php foreach ($dt_satuan as $satuan) { ?>
                                                 <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
                                             <?php } ?>
@@ -420,7 +420,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
 
                         <div class="row">
                             <div class="col-lg-12">
-                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
+                                <embed src='<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('cetakSurat') . '&idx=' . $row['id_surat']); ?>' width='100%' height='600px'></embed>
                             </div>
                         </div>
 
@@ -442,7 +442,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('uploadScan')); ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('uploadScan')); ?>" method="post" enctype="multipart/form-data">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -514,7 +514,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
 
-                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . base64_encode($jns) . '&action=' . base64_encode('edit')); ?>" method="post">
+                    <form action="<?= site_url('surat/menuSurat?page=' . $page . '&jns=' . encrypt_data($jns) . '&action=' . encrypt_data('edit')); ?>" method="post">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="id_surat" value="<?= $row['id_surat']; ?>">
                         <div class="modal-body">
@@ -546,7 +546,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                         <label class="col-lg-3 col-form-label text-lg-end">Kota Vendor<span class="text-danger">*</span></label>
                                         <div class="col-lg-9">
                                             <select class="form-control select-search" id="" name="kota_vendor" required>
-                                                <option>-- Silahkan Pilih --</option>
+                                                <option value="">-- Silahkan Pilih --</option>
                                                 <?php foreach ($dt_kabupaten as $kabupaten) {
                                                     if ($row_isiSurat->kota_vendor == $kabupaten->nama_kabupaten) { ?>
                                                         <option value="<?= $kabupaten->nama_kabupaten; ?>" selected><?= $kabupaten->nama_kabupaten; ?></option>
@@ -593,7 +593,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                         <label class="col-lg-3 col-form-label text-lg-end">Mengetahui<span class="text-danger">*</span></label>
                                         <div class="col-lg-9">
                                             <select class="form-control select-search" id="" name="mengetahui" required>
-                                                <option>-- Silahkan Pilih --</option>
+                                                <option value="">-- Silahkan Pilih --</option>
                                                 <?php
                                                 $isiTtd = json_decode($row['tanda_tangan']);
                                                 foreach ($dt_jabatan as $jabatan) {
@@ -611,7 +611,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                         <label class="col-lg-3 col-form-label text-lg-end">Tanda Tangan<span class="text-danger">*</span></label>
                                         <div class="col-lg-9">
                                             <select class="form-control select-search" id="img_ttd" name="img_ttd" required>
-                                                <option>-- Silahkan Pilih --</option>
+                                                <option value="">-- Silahkan Pilih --</option>
                                                 <option value="1" <?= $row_isiSurat->img_ttd == '1' ? 'selected' : ''; ?>>Ya</option>
                                                 <option value="0" <?= $row_isiSurat->img_ttd == '0' ? 'selected' : ''; ?>>Tidak</option>
                                             </select>
@@ -629,7 +629,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                         <label class="col-lg-3 col-form-label text-lg-end">Bank Vendor<span class="text-danger">*</span></label>
                                         <div class="col-lg-9">
                                             <select class="form-control select-search" id="bank_vendor" name="bank_vendor" required>
-                                                <option>-- Silahkan Pilih --</option>
+                                                <option value="">-- Silahkan Pilih --</option>
                                                 <?php foreach ($dt_bank as $bank) {
                                                     if ($row_isiSurat->bank_vendor == $bank->nama_bank) { ?>
                                                         <option value="<?= $bank->nama_bank; ?>" selected><?= $bank->nama_bank; ?></option>
@@ -710,7 +710,7 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                 </div>
                                                 <div class="col-2">
                                                     <select class="form-control select-search" name="satuan[<?= $index; ?>]" value="<?= $barang->satuan; ?>" id="satuan_<?= $index; ?>" required>
-                                                        <option>Pilih Satuan</option>
+                                                        <option value="">Pilih Satuan</option>
                                                         <?php foreach ($dt_satuan as $satuan) {
                                                             if ($barang->satuan == $satuan->nama_satuan) { ?>
                                                                 <option value="<?= $satuan->nama_satuan; ?>" selected><?= $satuan->nama_satuan; ?></option>
@@ -742,8 +742,8 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                                                 <input type="number" class="form-control" name="jumlah[<?= $index; ?>]" id="jumlah_<?= $index; ?>" placeholder="Jumlah">
                                             </div>
                                             <div class="col-2">
-                                                <select class="form-control select-search" name="satuan[<?= $index; ?>]" id="satuan_<?= $index; ?>" required>
-                                                    <option>Pilih Satuan</option>
+                                                <select class="form-control select-search" name="satuan[<?= $index; ?>]" id="satuan_<?= $index; ?>" >
+                                                    <option value="">Pilih Satuan</option>
                                                     <?php foreach ($dt_satuan as $satuan) { ?>
                                                         <option value="<?= $satuan->nama_satuan; ?>"><?= $satuan->nama_satuan; ?></option>
                                                     <?php } ?>
@@ -809,9 +809,8 @@ if (isset($dt_surat) || isset($dt_arsip)) {
                 <input type="number" class="form-control" name="jumlah[${index}]" id="jumlah_${index}" placeholder="Jumlah">
             </div>
             <div class="col-2">
-                <select class="form-control select-search" name="satuan[${index}]" id="satuan_${index}" required>
-                    <option>Pilih Satuan</option>
-                    <!-- opsi bisa ditambahkan lewat JS jika perlu -->
+                <select class="form-control select-search" name="satuan[${index}]" id="satuan_${index}">
+                    <option value="">Pilih Satuan</option>
                 </select>
             </div>
             <div class="col-3">

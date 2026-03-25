@@ -55,12 +55,6 @@
 
 </head>
 
-<?php
-
-
-
-?>
-
 <body>
 
     <?php if (session()->getFlashdata('success') !== null) { ?>
@@ -81,7 +75,7 @@
 
                 <div class="navbar-brand flex-1 flex-lg-0">
                     <a href="<?= base_url('dashboard'); ?>" class="d-inline-flex align-items-center">
-                        <img src="<?= base_url('showLogoApp'); ?>" alt="">
+                        <img src="<?= base_url('files/logo'); ?>" alt="">
                     </a>
                 </div>
 
@@ -140,7 +134,7 @@
                 <!-- Sidebar header -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-body d-flex justify-content-center">
-                        <h5 class="sidebar-resize-hide flex-grow-1 my-auto">Navigation</h5>
+                        <h5 class="sidebar-resize-hide flex-grow-1 my-auto">Navigasi</h5>
 
                         <div>
                             <button type="button" class="btn btn-light btn-icon btn-sm rounded-pill border-transparent sidebar-control sidebar-main-resize d-none d-lg-inline-flex">
@@ -170,7 +164,14 @@
                                     Home
                                 </span>
                             </a>
-
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= base_url('structure'); ?>" class="nav-link <?= isset($active_structure) ? $active_structure : ''; ?>">
+                                <i class="ph-tree-structure"></i>
+                                <span>
+                                    Struktur Perusahaan
+                                </span>
+                            </a>
                         </li>
 
                         <li class="nav-item-header">
@@ -189,14 +190,26 @@
                         </li>
 
                         <li class="nav-item-header">
-                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Marketing</div>
+                            <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Data</div>
                             <i class="ph-dots-three sidebar-resize-show"></i>
                         </li>
 
-                        <li class="nav-item nav-item-submenu <?= isset($open_marketing) ? $open_marketing : ''; ?>">
-                            <a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="<?= base_url('marketing/ekatalog'); ?>" class="nav-link <?= isset($active_ekatalog) ? $active_ekatalog : ''; ?>">
                                 <i class="ph-storefront"></i>
-                                <span>Data Marketing</span>
+                                <span>
+                                    Data Ekatalog
+                                </span>
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<?= base_url('master/document'); ?>" class="nav-link <?= isset($active_document) ? $active_document : ''; ?>">
+                                <i class="ph-file-cloud"></i>
+                                <span>
+                                    Dokumen Penting
+                                </span>
                             </a>
                             <ul class="nav-group-sub collapse <?= isset($show_marketing) ? $show_marketing : ''; ?>" data-submenu-title="Marketing">
                                 <li class="nav-item-divider"></li>
@@ -205,7 +218,6 @@
                                     <a href="<?= base_url('bo/pekerja') ?>" class="nav-link <?= isset($active_pekerja) ? $active_pekerja : ''; ?>">Data Pekerja</a>
                                 </li>
 
-                            </ul>
                         </li>
 
                         <li class="nav-item-header">
@@ -219,18 +231,15 @@
                                 <span>Master</span>
                             </a>
                             <ul class="nav-group-sub collapse <?= isset($show_master) ? $show_master : ''; ?>" data-submenu-title="Master">
-                                <li class="nav-item-divider"></li>
                                 <li class="nav-item">
-                                    <a href="<?= base_url('master/struktur'); ?>" class="nav-link <?= isset($active_struktur) ? $active_struktur : ''; ?>">Struktur Perusahaan </a>
-                                    <a href="<?= base_url('master/pegawai'); ?>" class="nav-link <?= isset($active_pegawai) ? $active_pegawai : ''; ?>">Pegawai </a>
-                                    <a href="<?= base_url('master/dokumen'); ?>" class="nav-link <?= isset($active_dokumen) ? $active_dokumen : ''; ?>">Dokumen Penting </a>
-                                    <a href="<?= base_url('master/garansi'); ?>" class="nav-link <?= isset($active_garansi) ? $active_garansi : ''; ?>">Sertifikat Garansi </a>
+                                    <a href="<?= base_url('master/employees'); ?>" class="nav-link <?= isset($active_employees) ? $active_employees : ''; ?>">Pegawai </a>
+                                    <a href="<?= base_url('master/guarantee'); ?>" class="nav-link <?= isset($active_guarantee) ? $active_guarantee : ''; ?>">Sertifikat Garansi </a>
                                 </li>
 
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="<?= base_url('setting/pengguna'); ?>" class="nav-link <?= isset($active_pengguna) ? $active_pengguna : ''; ?>">
+                            <a href="<?= base_url('users'); ?>" class="nav-link <?= isset($active_users) ? $active_users : ''; ?>">
                                 <i class="ph-users"></i>
                                 <span>
                                     Pengguna

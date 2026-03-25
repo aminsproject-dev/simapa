@@ -25,8 +25,6 @@
     <script src="<?= base_url('assets/bo/js/custom.js'); ?>"></script>
     <!-- /theme JS files -->
 
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
 </head>
 
 <body>
@@ -41,7 +39,7 @@
         <div class="container-fluid">
             <div class="navbar-brand">
                 <a href="<?= base_url(''); ?>" class="d-inline-flex align-items-center">
-                    <img src="<?= base_url('showLogoApp'); ?>" alt="">
+                    <img src="<?= base_url('files/logo'); ?>" alt="">
                 </a>
             </div>
         </div>

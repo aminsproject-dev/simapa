@@ -60,12 +60,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($dt_profile as $profile) { ?>
+                                            <?php foreach ($dt_setting as $setting) {
+                                                if ($setting['jenis'] != '1') continue;
+                                            ?>
                                                 <tr>
-                                                    <td><?= $profile->desc; ?></td>
-                                                    <td><?= $profile->content; ?></td>
+                                                    <td><?= $setting['desc']; ?></td>
+                                                    <td><?= $setting['content']; ?></td>
                                                     <td>
-                                                        <a href="#modal_edit_<?= $profile->id; ?>" data-bs-toggle="modal" class="dropdown-item">
+                                                        <a href="#modal_edit_<?= $setting['id']; ?>" data-bs-toggle="modal" class="dropdown-item">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
                                                     </td>
@@ -88,12 +90,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($dt_kop as $kop) { ?>
+                                            <?php foreach ($dt_setting as $setting) {
+                                                if ($setting['jenis'] != '3') continue;
+                                            ?>
                                                 <tr>
-                                                    <td><?= $kop->desc; ?></td>
-                                                    <td><?= $kop->content; ?></td>
+                                                    <td><?= $setting['desc']; ?></td>
+                                                    <td><?= $setting['content']; ?></td>
                                                     <td>
-                                                        <a href="#modal_edit_<?= $kop->id; ?>" data-bs-toggle="modal" class="dropdown-item">
+                                                        <a href="#modal_edit_<?= $setting['id']; ?>" data-bs-toggle="modal" class="dropdown-item">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
                                                     </td>
@@ -116,12 +120,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($dt_config as $config) { ?>
+                                            <?php foreach ($dt_setting as $setting) {
+                                                if ($setting['jenis'] != '2') continue;
+                                            ?>
                                                 <tr>
-                                                    <td><?= $config->desc; ?></td>
-                                                    <td><?= $config->content; ?></td>
+                                                    <td><?= $setting['desc']; ?></td>
+                                                    <td><?= $setting['content']; ?></td>
                                                     <td>
-                                                        <a href="#modal_edit_<?= $config->id; ?>" data-bs-toggle="modal" class="dropdown-item">
+                                                        <a href="#modal_edit_<?= $setting['id']; ?>" data-bs-toggle="modal" class="dropdown-item">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
                                                     </td>
@@ -133,7 +139,7 @@
 
                             </div>
 
-                            <div class="tab-pane fade " id="js-tab4">
+                            <div class="tab-pane fade" id="js-tab4">
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead>
@@ -147,11 +153,11 @@
                                         <tbody>
                                             <?php foreach ($dt_kode as $kode) { ?>
                                                 <tr>
-                                                    <td><?= $kode->nama_menu; ?></td>
-                                                    <td><?= $kode->kode; ?></td>
-                                                    <td><?= $kode->jenis; ?></td>
+                                                    <td><?= $kode['nama_menu']; ?></td>
+                                                    <td><?= $kode['kode']; ?></td>
+                                                    <td><?= $kode['jenis']; ?></td>
                                                     <td>
-                                                        <a href="#modal_editKode_<?= $kode->id; ?>" data-bs-toggle="modal" class="dropdown-item">
+                                                        <a href="#modal_editKode_<?= $kode['id']; ?>" data-bs-toggle="modal" class="dropdown-item">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
                                                     </td>
@@ -182,37 +188,42 @@
 <!-- /main content -->
 
 <?php foreach ($dt_kode as $kode) { ?>
-    <div id="modal_editKode_<?= $kode->id; ?>" class="modal fade" tabindex="-1">
+    <div id="modal_editKode_<?= $kode['id']; ?>" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Menu <?= $kode->nama_menu; ?></h5>
+                    <h5 class="modal-title">Edit Menu <?= $kode['nama_menu']; ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <form action="<?= base_url('setting/prosesSettingKode'); ?>" method="post">
+                <form action="<?= base_url('setting/update-kode/' . encrypt_data($kode['id'])); ?>" method="post">
                     <?= csrf_field(); ?>
-                    <input type="hidden" name="kode_id" value="<?= $kode->id; ?>">
                     <div class="modal-body">
+                        <div class="row mb-3">
+                            <label class="col-lg-3 col-form-label text-lg-end">Nama Menu</label>
+                            <div class="col-lg-9">
+                                <input type="text" name="nama_menu" value="<?= $kode['nama_menu']; ?>" class="form-control" required>
+                            </div>
+                        </div>
 
                         <div class="row mb-3">
                             <label class="col-lg-3 col-form-label text-lg-end">Url Menu</label>
                             <div class="col-lg-9">
-                                <input type="text" name="url" value="<?= $kode->url; ?>" class="form-control" readonly>
+                                <input type="text" name="url" value="<?= $kode['url']; ?>" class="form-control" readonly>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label class="col-lg-3 col-form-label text-lg-end">Kode Surat</label>
                             <div class="col-lg-9">
-                                <input type="text" name="kode" value="<?= $kode->kode; ?>" class="form-control" required>
+                                <input type="text" name="kode" value="<?= $kode['kode']; ?>" class="form-control" required>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label class="col-lg-3 col-form-label text-lg-end">Jenis Surat</label>
                             <div class="col-lg-9">
-                                <input type="text" name="jenis" value="<?= $kode->jenis; ?>" class="form-control" required>
+                                <input type="text" name="jenis" value="<?= $kode['jenis']; ?>" class="form-control" required>
                             </div>
                         </div>
 
@@ -230,7 +241,7 @@
 <?php } ?>
 
 <?php foreach ($dt_setting as $setting) { ?>
-    <div id="modal_edit_<?= $setting->id; ?>" class="modal fade" tabindex="-1">
+    <div id="modal_edit_<?= $setting['id']; ?>" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -238,32 +249,29 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <form action="<?= base_url('setting/prosesSetting'); ?>" method="post" enctype="multipart/form-data">
+                <form action="<?= base_url('setting/update/' . encrypt_data($setting['id'])); ?>" method="post" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
-                    <input type="hidden" name="setting_id" value="<?= $setting->id; ?>">
-                    <input type="hidden" name="setting_gambar" value="<?= $setting->gambar; ?>">
+                    <input type="hidden" name="setting_gambar" value="<?= $setting['gambar']; ?>">
                     <div class="modal-body">
-
-                        <?php if ($setting->gambar == 1) { ?>
+                        <?php if ($setting['gambar'] == 1) { ?>
                             <div class="row justify-content-center mb-3">
                                 <img src="<?= base_url('showLogoApp'); ?>" alt="image" style="width: 200px;">
                             </div>
 
                             <div class="row mb-3">
-                                <label class="col-lg-2 col-form-label text-lg-end"><?= $setting->desc; ?></label>
+                                <label class="col-lg-2 col-form-label text-lg-end"><?= $setting['desc']; ?></label>
                                 <div class="col-lg-10">
                                     <input type="file" name="content" accept=".png,.jpg,.jpeg" class="form-control" required>
                                 </div>
                             </div>
                         <?php } else { ?>
                             <div class="row mb-3">
-                                <label class="col-lg-2 col-form-label text-lg-end"><?= $setting->desc; ?></label>
+                                <label class="col-lg-2 col-form-label text-lg-end"><?= $setting['desc']; ?></label>
                                 <div class="col-lg-10">
-                                    <input type="text" name="content" value="<?= $setting->content; ?>" class="form-control" required>
+                                    <input type="text" name="content" value="<?= $setting['content']; ?>" class="form-control" required>
                                 </div>
                             </div>
                         <?php } ?>
-
 
                     </div>
 
