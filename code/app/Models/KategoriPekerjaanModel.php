@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Bo;
+namespace App\Models;
 
 use CodeIgniter\Model;
 
@@ -15,15 +15,12 @@ class KategoriPekerjaanModel extends Model
     protected $allowedFields    = [
         'nama_kategori',
         'status',
-        'rowstatus',
-        'createdon',
-        'createdby',
-        'modifiedon',
-        'modifiedby',
+        'created_at',
+        'updated_at',
     ];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

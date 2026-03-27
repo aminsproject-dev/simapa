@@ -81,6 +81,33 @@ const SweetAlert = (function () {
       }
     }
 
+    $(document).on("submit", "form", function (e) {
+      const $btn = $(this).find(".sweet-confirm");
+
+      if (!$btn.length) return;
+
+      e.preventDefault();
+
+      const title = $btn.data("title") || "Konfirmasi";
+      const message = $btn.data("message") || "Lanjutkan proses?";
+      const icon = $btn.data("icon") || "question";
+
+      swalInit
+        .fire({
+          title: title,
+          text: message,
+          icon: icon,
+          showCancelButton: true,
+          confirmButtonText: "Ya, lanjutkan",
+          cancelButtonText: "Batal",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            e.target.submit();
+          }
+        });
+    });
+
     //
     // Contextual alerts
     //
