@@ -154,6 +154,48 @@ $routes->group('/master', [
         $routes->post('update/(:segment)', 'TypeExpertController::update/$1');
         $routes->get('delete/(:segment)', 'TypeExpertController::delete/$1');
     });
+    $routes->group('bahasa', function ($routes) {
+        $routes->get('', 'BahasaController::index');
+        $routes->post('add', 'BahasaController::add');
+        $routes->post('update/(:segment)', 'BahasaController::update/$1');
+        $routes->get('delete/(:segment)', 'BahasaController::delete/$1');
+    });
+    $routes->group('pendidikan-akhir', function ($routes) {
+        $routes->get('', 'PendidikanAkhirController::index');
+        $routes->post('add', 'PendidikanAkhirController::add');
+        $routes->post('update/(:segment)', 'PendidikanAkhirController::update/$1');
+        $routes->get('delete/(:segment)', 'PendidikanAkhirController::delete/$1');
+    });
+    $routes->group('kbli', function ($routes) {
+        $routes->get('', 'KbliController::index');
+        $routes->post('add', 'KbliController::add');
+        $routes->post('update/(:segment)', 'KbliController::update/$1');
+        $routes->get('delete/(:segment)', 'KbliController::delete/$1');
+    });
+    $routes->group('kategori-pekerjaan', function ($routes) {
+        $routes->get('', 'KategoriPekerjaanController::index');
+        $routes->post('add', 'KategoriPekerjaanController::add');
+        $routes->post('update/(:segment)', 'KategoriPekerjaanController::update/$1');
+        $routes->get('delete/(:segment)', 'KategoriPekerjaanController::delete/$1');
+    });
+    $routes->group('jenis-instansi', function ($routes) {
+        $routes->get('', 'JenisInstansiController::index');
+        $routes->post('add', 'JenisInstansiController::add');
+        $routes->post('update/(:segment)', 'JenisInstansiController::update/$1');
+        $routes->get('delete/(:segment)', 'JenisInstansiController::delete/$1');
+    });
+    $routes->group('nama-instansi', function ($routes) {
+        $routes->get('', 'NamaInstansiController::index');
+        $routes->post('add', 'NamaInstansiController::add');
+        $routes->post('update/(:segment)', 'NamaInstansiController::update/$1');
+        $routes->get('delete/(:segment)', 'NamaInstansiController::delete/$1');
+    });
+    $routes->group('satuan-kerja', function ($routes) {
+        $routes->get('', 'SatuanKerjaController::index');
+        $routes->post('add', 'SatuanKerjaController::add');
+        $routes->post('update/(:segment)', 'SatuanKerjaController::update/$1');
+        $routes->get('delete/(:segment)', 'SatuanKerjaController::delete/$1');
+    });
 });
 
 $routes->group('/users', [
