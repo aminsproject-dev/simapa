@@ -149,9 +149,6 @@ class PekerjaController extends BaseController
                     'pendidikan_non_formal' => $row[23] ?? null,
                     'id_pendidikan_akhir' => $row[24] ?? null,
                     'profesi_keahlian' => $row[25] ?? null,
-                    'rowstatus' => 1,
-                    'createdon' => date('Y-m-d H:i:s'),
-                    'createdby' => session()->get('fullname'),
                 ];
             }
             if (!empty($insertBatch)) {

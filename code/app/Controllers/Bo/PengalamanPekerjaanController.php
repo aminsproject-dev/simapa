@@ -140,9 +140,6 @@ class PengalamanPekerjaanController extends BaseController
                     'id_kabupaten_instansi' => $row[19] ?? null,
                     'alamat_instansi' => $row[20] ?? null,
                     'telepon_instansi' => $row[21] ?? null,
-                    'rowstatus' => 1,
-                    'createdon' => date('Y-m-d H:i:s'),
-                    'createdby' => session()->get('fullname'),
                 ];
             }
 
