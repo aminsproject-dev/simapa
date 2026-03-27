@@ -72,4 +72,11 @@ class RegencyController extends BaseController
 
         return redirect()->to('master/regency')->with('success', 'Data berhasil dihapus');
     }
+
+    public function getSpecific()
+    {
+        $id = $this->request->getGet('id');
+        $data = $this->regencyModel->getSpecificRegency($id);
+        echo json_encode($data);
+    }
 }

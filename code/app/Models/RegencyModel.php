@@ -63,4 +63,11 @@ class RegencyModel extends Model
         return $this->join('tb_provinsi a', 'tb_kabupaten.id_provinsi=a.id')
             ->findAll();
     }
+
+    public function getSpecificRegency($id)
+    {
+        return $this->join('tb_provinsi a', 'tb_kabupaten.id_provinsi=a.id')
+            ->where('a.id', $id)
+            ->findAll();
+    }
 }

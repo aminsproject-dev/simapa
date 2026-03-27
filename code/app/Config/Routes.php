@@ -50,11 +50,24 @@ $routes->group('/pekerja', ['filter' => 'authGuard'], function ($routes) {
     $routes->post('import-save', 'Bo\PekerjaController::importSave');
 });
 
-$routes->group('/pengalaman', ['filter' => 'authGuard'], function ($routes) {
-    // Pengalaman
-    $routes->get('', 'Bo\PengalamanPekerjaanController::index');
-    $routes->get('export', 'Bo\PengalamanPekerjaanController::export');
-    $routes->post('import-save', 'Bo\PengalamanPekerjaanController::importSave');
+$routes->group('/pengalaman', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'PengalamanPekerjaanController::index');
+    $routes->get('view/(:segment)', 'PengalamanPekerjaanController::view/$1');
+
+    $routes->get('add', 'PengalamanPekerjaanController::create');
+    $routes->post('add', 'PengalamanPekerjaanController::add');
+
+    $routes->get('edit/(:segment)', 'PengalamanPekerjaanController::edit/$1');
+    $routes->post('edit/(:segment)', 'PengalamanPekerjaanController::update/$1');
+
+    $routes->get('delete/(:segment)', 'PengalamanPekerjaanController::delete/$1');
+
+    $routes->get('import-example', 'PengalamanPekerjaanController::importExample');
+    $routes->post('import-save', 'PengalamanPekerjaanController::importSave');
+    $routes->get('export', 'PengalamanPekerjaanController::export');
 });
 
 $routes->group('/marketing', [
@@ -115,6 +128,7 @@ $routes->group('/master', [
         $routes->post('add', 'RegencyController::add');
         $routes->post('update/(:segment)', 'RegencyController::update/$1');
         $routes->get('delete/(:segment)', 'RegencyController::delete/$1');
+        $routes->get('get-specific', 'RegencyController::getSpecific');
     });
     $routes->group('district', function ($routes) {
         $routes->get('', 'DistrictController::index');

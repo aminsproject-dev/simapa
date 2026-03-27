@@ -10,35 +10,23 @@
                         <h5 class="py-sm-2 my-sm-1"><?= $title; ?></h5>
                         <div class="mt-2 mt-sm-0 ms-sm-auto d-flex gap-2">
                             <a href="<?= site_url('pengalaman/export'); ?>" class="btn btn-success fw-bold">
-                                <i class="ph-file-csv me-1"></i>
+                                <i class="ph-file-xls me-1"></i>
                                 Export Excel
                             </a>
                             <a data-bs-toggle="modal" data-bs-target="#modal_import" class="btn btn-primary fw-bold">
                                 <i class="ph-upload-simple me-1"></i>
                                 Import Excel
                             </a>
+                            <a href="<?= base_url('pengalaman/add'); ?>" class="btn btn-primary fw-bold">
+                                <i class="ph-plus me-1"></i>
+                                Tambah Data
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
 
-                        <?php if (session()->getFlashdata('success')): ?>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="ph-check-circle me-2"></i>
-                                <?= session()->getFlashdata('success'); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if (session()->getFlashdata('error')): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="ph-warning-circle me-2"></i>
-                                <?= session()->getFlashdata('error'); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <div class="table-responsive">
-                            <table class="table datatable-6 table-striped table-hover">
+                            <table class="table datatable-8 table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -48,6 +36,8 @@
                                         <th>Tgl Selesai</th>
                                         <th>Nilai Kontrak</th>
                                         <th>Tgl Serah Terima</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -56,12 +46,31 @@
                                         foreach ($dt_pengalaman as $row) { ?>
                                             <tr>
                                                 <td><?= $i++; ?></td>
-                                                <td><?= $row->nama_kontrak; ?></td>
-                                                <td><?= $row->nomor_kontrak; ?></td>
-                                                <td><?= $row->tanggal_mulai; ?></td>
-                                                <td><?= $row->tanggal_selesai; ?></td>
-                                                <td>Rp <?= number_format($row->nilai_kontrak, 0, ',', '.'); ?></td>
-                                                <td><?= $row->tanggal_serah_terima; ?></td>
+                                                <td><?= $row['nama_kontrak']; ?></td>
+                                                <td><?= $row['nomor_kontrak']; ?></td>
+                                                <td><?= $row['tanggal_mulai']; ?></td>
+                                                <td><?= $row['tanggal_selesai']; ?></td>
+                                                <td>Rp <?= number_format($row['nilai_kontrak'], 0, ',', '.'); ?></td>
+                                                <td><?= $row['tanggal_serah_terima']; ?></td>
+                                                <td>
+                                                    <?= match ((string) $row['status']) {
+                                                        "aktif" => '<span class="badge bg-success bg-opacity-10 text-success">Aktif</span>',
+                                                        "nonaktif" => '<span class="badge bg-danger bg-opacity-10 text-danger">Tidak Aktif</span>',
+                                                    }; ?>
+                                                </td>
+                                                <td>
+                                                    <div class="d-inline-flex">
+                                                        <a href="<?= base_url('pengalaman/view/' . encrypt_data($row['id_pengalaman'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Lihat Data">
+                                                            <i class="ph-magnifying-glass me-2"></i>
+                                                        </a>
+                                                        <a href="<?= base_url('pengalaman/edit/' . encrypt_data($row['id_pengalaman'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                        </a>
+                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('pengalaman/delete/' . encrypt_data($row['id_pengalaman'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                            <i class="ph-trash me-2"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
                                             </tr>
                                     <?php }
                                     } ?>
@@ -94,7 +103,7 @@
                     <div class="alert alert-info">
                         <i class="ph-info me-2"></i>
                         Pastikan file Excel menggunakan urutan kolom yang sesuai.
-                        <a href="<?= site_url('pengalaman/export'); ?>" class="fw-bold">
+                        <a href="<?= site_url('pengalaman/import-example'); ?>" class="fw-bold">
                             Download template Excel
                         </a>
                         terlebih dahulu.
@@ -132,13 +141,3 @@
         </div>
     </div>
 </div>
-
-
-<script>
-    $(document).ready(function() {
-        <?php if (session()->getFlashdata('error')): ?>
-            var myModal = new bootstrap.Modal(document.getElementById('modal_import'));
-            myModal.show();
-        <?php endif; ?>
-    });
-</script>
