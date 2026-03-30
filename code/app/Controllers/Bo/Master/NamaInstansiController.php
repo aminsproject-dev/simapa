@@ -3,8 +3,8 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\JenisInstansiModel;
-use App\Models\Bo\NamaInstansiModel;
+use App\Models\JenisInstansiModel;
+use App\Models\NamaInstansiModel;
 
 class NamaInstansiController extends BaseController
 {
@@ -29,7 +29,7 @@ class NamaInstansiController extends BaseController
         ];
 
         echo view('bo/pages/v_header', $data);
-        echo view('bo/master/v_nama_instasni');
+        echo view('bo/master/v_nama_instansi');
         echo view('bo/pages/v_footer');
     }
 

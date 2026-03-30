@@ -3,7 +3,7 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\BahasaModel;
+use App\Models\BahasaModel;
 
 class BahasaController extends BaseController
 {

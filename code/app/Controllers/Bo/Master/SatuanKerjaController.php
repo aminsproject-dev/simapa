@@ -3,8 +3,8 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\NamaInstansiModel;
-use App\Models\Bo\SatuanKerjaModel;
+use App\Models\NamaInstansiModel;
+use App\Models\SatuanKerjaModel;
 
 class SatuanKerjaController extends BaseController
 {

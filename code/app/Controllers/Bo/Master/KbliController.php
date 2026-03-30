@@ -3,7 +3,7 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\KbliModel;
+use App\Models\KbliModel;
 
 class KbliController extends BaseController
 {

@@ -69,9 +69,9 @@
                             <input type="text" name="nama_kategori_pekerjaan" class="form-control" placeholder="Masukkan nama kategori pekerjaan" required>
                         </div>
                     </div>
-                    <div class="text-muted"><span class="text-danger">*</span>) Wajib di idi</div>
+                    <div class="text-muted"><span class="text-danger">*</span>) Wajib di isi</div>
                 </div>
-                <div>
+                <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-bs-dismiss="modal">Tutup</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>

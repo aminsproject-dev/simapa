@@ -248,6 +248,13 @@
                                     <a href="<?= base_url('master/guarantee'); ?>" class="nav-link <?= isset($active_guarantee) ? $active_guarantee : ''; ?>">Sertifikat Garansi </a>
                                     <a href="<?= base_url('master/employment-status'); ?>" class="nav-link <?= isset($active_employment_status) ? $active_employment_status : ''; ?>">Status Kepegawaian </a>
                                     <a href="<?= base_url('master/type-expert'); ?>" class="nav-link <?= isset($active_type_expert) ? $active_type_expert : ''; ?>">Jenis Tenaga Ahli </a>
+                                    <a href="<?= base_url('master/bahasa'); ?>" class="nav-link <?= isset($active_bahasa) ? $active_bahasa : ''; ?>">Bahasa</a>
+                                    <a href="<?= base_url('master/pendidikan-akhir') ?>" class="nav-link <?= isset($active_pendidikan_akhir) ? $active_pendidikan_akhir : ''; ?>">Pendidikan Akhir</a>
+                                    <a href="<?= base_url('master/kbli') ?>" class="nav-link <?= isset($active_kbli) ? $active_kbli : ''; ?>">KBLI</a>
+                                    <a href="<?= base_url('master/kategori-pekerjaan') ?>" class="nav-link <?= isset($active_kategori_pekerjaan) ? $active_kategori_pekerjaan : ''; ?>">Kategori Pekerjaan</a>
+                                    <a href="<?= base_url('master/jenis-instansi') ?>" class="nav-link <?= isset($active_jenis_instansi) ? $active_jenis_instansi : ''; ?>">Jenis Instansi</a>
+                                    <a href="<?= base_url('master/nama-instansi') ?>" class="nav-link <?= isset($active_nama_instansi) ? $active_nama_instansi : ''; ?>">Nama Instansi</a>
+                                    <a href="<?= base_url('master/satuan-kerja') ?>" class="nav-link <?= isset($active_satuan_kerja) ? $active_satuan_kerja : ''; ?>">Satuan Kerja</a>
 
                                 <li class="nav-item nav-item-submenu <?= isset($open_region) ? $open_region : ''; ?>">
                                     <a href="#" class="nav-link">

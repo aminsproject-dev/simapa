@@ -3,7 +3,7 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\PendidikanAkhirModel;
+use App\Models\PendidikanAkhirModel;
 
 class PendidikanAkhirController extends BaseController
 {

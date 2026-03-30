@@ -3,7 +3,7 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\JenisInstansiModel;
+use App\Models\JenisInstansiModel;
 
 class JenisInstansiController extends BaseController
 {

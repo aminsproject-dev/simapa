@@ -3,7 +3,7 @@
 namespace App\Controllers\Bo\Master;
 
 use App\Controllers\BaseController;
-use App\Models\Bo\KategoriPekerjaanModel;
+use App\Models\KategoriPekerjaanModel;
 
 class KategoriPekerjaanController extends BaseController
 {
