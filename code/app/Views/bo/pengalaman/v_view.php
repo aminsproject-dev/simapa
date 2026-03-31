@@ -73,7 +73,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Kategori Pekerjaan</td>
-                                                <td><?= $row_experience['nama_kategori']; ?></td>
+                                                <td><?= $row_experience['nama_kategori_pekerjaan']; ?></td>
                                             </tr>
                                             <tr>
                                                 <td>Presentase Pekerjaan</td>

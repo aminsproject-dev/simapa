@@ -10,45 +10,35 @@
                         <h5 class="py-sm-2 my-sm-1"><?= $title; ?></h5>
                         <div class="mt-2 mt-sm-0 ms-sm-auto d-flex gap-2">
                             <a href="<?= site_url('pekerja/export'); ?>" class="btn btn-success fw-bold">
-                                <i class="ph-file-csv me-1"></i>
+                                <i class="ph-file-xls me-1"></i>
                                 Export Excel
                             </a>
                             <a data-bs-toggle="modal" data-bs-target="#modal_import" class="btn btn-primary fw-bold">
                                 <i class="ph-upload-simple me-1"></i>
                                 Import Excel
                             </a>
+                            <a href="<?= base_url('pekerja/add'); ?>" class="btn btn-primary fw-bold">
+                                <i class="ph-plus me-1"></i>
+                                Tambah Data
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
 
-                        <?php if (session()->getFlashdata('success')): ?>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="ph-check-circle me-2"></i>
-                                <?= session()->getFlashdata('success'); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if (session()->getFlashdata('error')): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="ph-warning-circle me-2"></i>
-                                <?= session()->getFlashdata('error'); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <div class="table-responsive">
-                            <table class="table datatable-6 table-striped table-hover">
+                            <table class="table datatable-8 table-striped table-hover">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
+                                        <th>Status Kepegawaian</th>
+                                        <th>Jenis Tenaga Ahli</th>
                                         <th>NIK / Paspor</th>
                                         <th>Jenis Kelamin</th>
-                                        <th>Email</th>
                                         <th>Telepon</th>
-                                        <th>Profesi Keahlian</th>
-                                        <th>Lama Pengalaman (Thn)</th>
+                                        <th>Email</th>
+                                        <th>Pendidikan Akhir</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -57,13 +47,33 @@
                                         foreach ($dt_pekerja as $row) { ?>
                                             <tr>
                                                 <td><?= $i++; ?></td>
-                                                <td><?= $row->nama; ?></td>
-                                                <td><?= $row->nik_paspor; ?></td>
-                                                <td><?= $row->jenis_kelamin; ?></td>
-                                                <td><?= $row->email; ?></td>
-                                                <td><?= $row->telepon; ?></td>
-                                                <td><?= $row->profesi_keahlian; ?></td>
-                                                <td class="text-center"><?= $row->lama_pengalaman_kerja_tahun; ?></td>
+                                                <td><?= $row['nama']; ?></td>
+                                                <td><?= $row['id_status_kepegawaian'] ?? '-'; ?></td>
+                                                <td><?= $row['id_jenis_tenaga_ahli'] ?? '-'; ?></td>
+                                                <td><?= $row['nik_paspor'] ?? '-'; ?></td>
+                                                <td>
+                                                    <?= match ((string) $row['jenis_kelamin']) {
+                                                        'Laki-laki' => '<span class="badge bg-primary bg-opacity-10 text-primary">Pria</span>',
+                                                        'Perempuan' => '<span class="badge bg-danger bg-opacity-10 text-danger">Wanita</span>',
+                                                        default => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
+                                                    }; ?>
+                                                </td>
+                                                <td><?= $row['telepon'] ?? '-'; ?></td>
+                                                <td><?= $row['email'] ?? '-'; ?></td>
+                                                <td><?= $row['id_pendidikan_akhir'] ?? '-'; ?></td>
+                                                <td class="text-center">
+                                                    <div class="d-inline-flex">
+                                                        <a href="<?= base_url('pekerja/view/' . encrypt_data($row['id_pekerja'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Lihat Data">
+                                                            <i class="ph-magnifying-glass me-2"></i>
+                                                        </a>
+                                                        <a href="<?= base_url('pekerja/edit/' . encrypt_data($row['id_pekerja'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
+                                                            <i class="ph-note-pencil me-2"></i>
+                                                        </a>
+                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('pekerja/delete/' . encrypt_data($row['id_pekerja'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                            <i class="ph-trash me-2"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
                                             </tr>
                                     <?php }
                                     } ?>
@@ -81,6 +91,7 @@
 </div>
 <!-- /main content -->
 
+
 <div id="modal_import" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -96,7 +107,7 @@
                     <div class="alert alert-info">
                         <i class="ph-info me-2"></i>
                         Pastikan file Excel menggunakan urutan kolom yang sesuai.
-                        <a href="<?= site_url('pekerja/export'); ?>" class="fw-bold">
+                        <a href="<?= site_url('pekerja/import-example'); ?>" class="fw-bold">
                             Download template Excel
                         </a>
                         terlebih dahulu.
@@ -104,13 +115,13 @@
 
                     <div class="row mb-3">
                         <label class="col-lg-3 col-form-label text-lg-end">
-                            Upload File Excel (.xlsx / .xls) <span class="text-danger">*</span>
+                            File Excel <span class="text-danger">*</span>
                         </label>
                         <div class="col-lg-9">
                             <input type="file"
                                 name="file_csv"
                                 class="form-control"
-                                accept=".xlsx, .xls"
+                                accept=".xlsx,.xls"
                                 required>
                             <span class="form-text text-muted">Format file: .xlsx/.xls</span>
                         </div>
@@ -134,13 +145,3 @@
         </div>
     </div>
 </div>
-
-
-<script>
-    $(document).ready(function() {
-        <?php if (session()->getFlashdata('error')): ?>
-            var myModal = new bootstrap.Modal(document.getElementById('modal_import'));
-            myModal.show();
-        <?php endif; ?>
-    });
-</script>

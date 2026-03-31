@@ -7,13 +7,13 @@ use CodeIgniter\Model;
 class KategoriPekerjaanModel extends Model
 {
     protected $table            = 'tb_kategori_pekerjaan';
-    protected $primaryKey       = 'id_kategori';
+    protected $primaryKey       = 'id_kategori_pekerjaan';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'nama_kategori',
+        'nama_kategori_pekerjaan',
         'status',
         'created_at',
         'updated_at',

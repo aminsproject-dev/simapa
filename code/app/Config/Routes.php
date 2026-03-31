@@ -43,11 +43,24 @@ $routes->group('/surat', [
     $routes->get('unarchive/(:segment)', 'SuratController::unarchive');
 });
 
-$routes->group('/pekerja', ['filter' => 'authGuard'], function ($routes) {
-    // Pekerja
-    $routes->get('', 'Bo\PekerjaController::index');
-    $routes->get('export', 'Bo\PekerjaController::export');
-    $routes->post('import-save', 'Bo\PekerjaController::importSave');
+$routes->group('/pekerja', [
+    'filter'    => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'PekerjaController::index');
+    $routes->get('view/(:segment)', 'PekerjaController::view/$1');
+
+    $routes->get('add', 'PekerjaController::create');
+    $routes->post('add', 'PekerjaController::add');
+
+    $routes->get('edit/(:segment)', 'PekerjaController::edit/$1');
+    $routes->post('edit/(:segment)', 'PekerjaController::update/$1');
+
+    $routes->get('delete/(:segment)', 'PekerjaController::delete/$1');
+
+    $routes->get('import-example', 'PekerjaController::importExample');
+    $routes->post('import-save', 'PekerjaController::importSave');
+    $routes->get('export', 'PekerjaController::export');
 });
 
 $routes->group('/pengalaman', [

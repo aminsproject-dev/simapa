@@ -94,7 +94,7 @@ class JobExperienceModel extends Model
             kab_instansi.nama_kabupaten as kabupaten_instansi
         ');
 
-        $builder->join('tb_kategori_pekerjaan kp', 'kp.id_kategori = t.id_kategori_pekerjaan', 'left');
+        $builder->join('tb_kategori_pekerjaan kp', 'kp.id_kategori_pekerjaan = t.id_kategori_pekerjaan', 'left');
         $builder->join('tb_kbli kbli', 'kbli.id_kbli = t.id_kbli', 'left');
         $builder->join('tb_negara negara', 'negara.id_negara = t.id_negara_pekerjaan', 'left');
         $builder->join('tb_provinsi prov_pekerjaan', 'prov_pekerjaan.id = t.id_provinsi_pekerjaan', 'left');
@@ -119,7 +119,7 @@ class JobExperienceModel extends Model
         $builder->select('
             t.*,
 
-            kp.nama_kategori,
+            kp.nama_kategori_pekerjaan,
             kbli.kode_kbli,
             kbli.nama_kbli,
 
@@ -136,7 +136,7 @@ class JobExperienceModel extends Model
             kab_instansi.nama_kabupaten as kabupaten_instansi
         ');
 
-        $builder->join('tb_kategori_pekerjaan kp', 'kp.id_kategori = t.id_kategori_pekerjaan', 'left');
+        $builder->join('tb_kategori_pekerjaan kp', 'kp.id_kategori_pekerjaan = t.id_kategori_pekerjaan', 'left');
         $builder->join('tb_kbli kbli', 'kbli.id_kbli = t.id_kbli', 'left');
         $builder->join('tb_negara negara', 'negara.id_negara = t.id_negara_pekerjaan', 'left');
         $builder->join('tb_provinsi prov_pekerjaan', 'prov_pekerjaan.id = t.id_provinsi_pekerjaan', 'left');
