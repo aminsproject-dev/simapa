@@ -119,6 +119,42 @@ $this->model = new BaseModel();
     });
 </script>
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Global handler: Hapus dengan konfirmasi -->
+<script>
+    $(document).on('click', '.sweet_warning_custom', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).data('url');
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: 'Data yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e53935',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+    });
+</script>
+
+<!-- Fix: Select2 untuk modal import pekerja -->
+<script>
+    $(document).ready(function() {
+        $("#modal_import").on("shown.bs.modal", function() {
+            $(".select-search", this).select2({
+                dropdownParent: $(this),
+            });
+        });
+    });
+</script>
 
 </body>
 

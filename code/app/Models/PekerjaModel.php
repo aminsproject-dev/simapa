@@ -73,27 +73,17 @@ class PekerjaModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getAllData()
+    private function buildJoin($builder)
     {
-        $builder = $this->db->table('tb_pekerja t');
-
         $builder->select('
             t.*,
-
             sk.nama_status,
-
-            jta.nama_jenis as nama_jenis_tenaga_ahli,
-
-            negara_wn.nama_negara as negara_kewarganegaraan,
-
-            negara_lahir.nama_negara as negara_tempat_lahir,
-
-            kab_lahir.nama_kabupaten as kabupaten_tempat_lahir,
-
-            prov_domisili.nama_provinsi as provinsi_domisili,
-
-            kab_domisili.nama_kabupaten as kabupaten_domisili,
-
+            jta.nama_jenis AS nama_jenis_tenaga_ahli,
+            negara_wn.nama_negara AS negara_kewarganegaraan,
+            negara_lahir.nama_negara AS negara_tempat_lahir,
+            kab_lahir.nama_kabupaten AS kabupaten_tempat_lahir,
+            prov_domisili.nama_provinsi AS provinsi_domisili,
+            kab_domisili.nama_kabupaten AS kabupaten_domisili,
             pa.nama_pendidikan_akhir
         ');
 
@@ -105,49 +95,25 @@ class PekerjaModel extends Model
         $builder->join('tb_provinsi prov_domisili', 'prov_domisili.id = t.id_provinsi_domisili', 'left');
         $builder->join('tb_kabupaten kab_domisili', 'kab_domisili.id_kabupaten = t.id_kabupaten_domisili', 'left');
         $builder->join('tb_pendidikan_akhir pa', 'pa.id_pendidikan_akhir = t.id_pendidikan_akhir', 'left');
+
+        return $builder;
+    }
+
+    public function getAllData()
+    {
+        $builder = $this->db->table('tb_pekerja t');
+        $builder = $this->buildJoin($builder);
         $builder->orderBy('t.id_pekerja', 'DESC');
 
-        $result = $builder->get()->getResultArray();
-
-        return $result;
+        return $builder->get()->getResultArray();
     }
 
     public function getSelectedData($id)
     {
         $builder = $this->db->table('tb_pekerja t');
-
-        $builder->select('
-            t.*,
-
-            sk.nama_status,
-
-            jta.nama_jenis as nama_jenis_tenaga_ahli,
-
-            negara_wn.nama_negara as negara_kewarganegaraan,
-
-            negara_lahir.nama_negara as negara_tempat_lahir,
-
-            kab_lahir.nama_kabupaten as kabupaten_tempat_lahir,
-
-            prov_domisili.nama_provinsi as provinsi_domisili,
-
-            kab_domisili.nama_kabupaten as kabupaten_domisili,
-
-            pa.nama_pendidikan_akhir
-        ');
-
-        $builder->join('tb_status_kepegawaian sk', 'sk.id_status = t.id_status_kepegawaian', 'left');
-        $builder->join('tb_jenis_tenaga_ahli jta', 'jta.id_jenis = t.id_jenis_tenaga_ahli', 'left');
-        $builder->join('tb_negara negara_wn', 'negara_wn.id_negara = t.id_kewarganegaraan', 'left');
-        $builder->join('tb_negara negara_lahir', 'negara_lahir.id_negara = t.id_negara_tempat_lahir', 'left');
-        $builder->join('tb_kabupaten kab_lahir', 'kab_lahir.id_kabupaten = t.id_kabupaten_tempat_lahir', 'left');
-        $builder->join('tb_provinsi prov_domisili', 'prov_domisili.id = t.id_provinsi_domisili', 'left');
-        $builder->join('tb_kabupaten kab_domisili', 'kab_domisili.id_kabupaten = t.id_kabupaten_domisili', 'left');
-        $builder->join('tb_pendidikan_akhir pa', 'pa.id_pendidikan_akhir = t.id_pendidikan_akhir', 'left');
+        $builder = $this->buildJoin($builder);
         $builder->where('t.id_pekerja', $id);
 
-        $result = $builder->get()->getRowArray();
-
-        return $result;
+        return $builder->get()->getRowArray();
     }
 }

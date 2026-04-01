@@ -48,19 +48,19 @@
                                             <tr>
                                                 <td><?= $i++; ?></td>
                                                 <td><?= $row['nama']; ?></td>
-                                                <td><?= $row['id_status_kepegawaian'] ?? '-'; ?></td>
-                                                <td><?= $row['id_jenis_tenaga_ahli'] ?? '-'; ?></td>
+                                                <td><?= $row['nama_status'] ?? '-'; ?></td>
+                                                <td><?= $row['nama_jenis_tenaga_ahli'] ?? '-'; ?></td>
                                                 <td><?= $row['nik_paspor'] ?? '-'; ?></td>
                                                 <td>
                                                     <?= match ((string) $row['jenis_kelamin']) {
-                                                        'Laki-laki' => '<span class="badge bg-primary bg-opacity-10 text-primary">Pria</span>',
-                                                        'Perempuan' => '<span class="badge bg-danger bg-opacity-10 text-danger">Wanita</span>',
-                                                        default => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
+                                                        'Pria'   => '<span class="badge bg-primary bg-opacity-10 text-primary">Pria</span>',
+                                                        'Wanita' => '<span class="badge bg-danger bg-opacity-10 text-danger">Wanita</span>',
+                                                        default  => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
                                                     }; ?>
                                                 </td>
                                                 <td><?= $row['telepon'] ?? '-'; ?></td>
                                                 <td><?= $row['email'] ?? '-'; ?></td>
-                                                <td><?= $row['id_pendidikan_akhir'] ?? '-'; ?></td>
+                                                <td><?= $row['nama_pendidikan_akhir'] ?? '-'; ?></td>
                                                 <td class="text-center">
                                                     <div class="d-inline-flex">
                                                         <a href="<?= base_url('pekerja/view/' . encrypt_data($row['id_pekerja'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Lihat Data">
@@ -69,7 +69,7 @@
                                                         <a href="<?= base_url('pekerja/edit/' . encrypt_data($row['id_pekerja'])); ?>" class="dropdown-item" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit Data">
                                                             <i class="ph-note-pencil me-2"></i>
                                                         </a>
-                                                        <a href="#" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('pekerja/delete/' . encrypt_data($row['id_pekerja'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
+                                                        <a href="<?= base_url('pekerja/delete/' . encrypt_data($row['id_pekerja'])); ?>" class="dropdown-item sweet_warning_custom" data-url="<?= site_url('pekerja/delete/' . encrypt_data($row['id_pekerja'])); ?>" data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Hapus Data">
                                                             <i class="ph-trash me-2"></i>
                                                         </a>
                                                     </div>
@@ -145,3 +145,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).on('click', '.sweet_warning_custom', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).data('url');
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: 'Data yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e53935',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+    });
+</script>

@@ -44,7 +44,7 @@ class PekerjaController extends BaseController
             'open_data' => 'show',
             'show_pekerja' => 'show',
             'active_pekerja' => 'active',
-            'dt_pekerja' => $this->pekerjaModel->orderBy('nama', 'asc')->findAll(),
+            'dt_pekerja' => $this->pekerjaModel->getAllData(),
         ];
 
         echo view('bo/pages/v_header', $data);
@@ -78,7 +78,10 @@ class PekerjaController extends BaseController
             'dt_jenis_tenaga_ahli' => $this->jenisTenagaAhliModel->where('status', 1)->findAll(),
             'dt_country' => $this->countryModel->findAll(),
             'dt_province' => $this->provinceModel->findAll(),
+            'dt_kabupaten' => $this->regencyModel->findAll(),
             'dt_pendidikan_akhir' => $this->pendidikanAkhirModel->findAll(),
+            'opt_jenis_kelamin' => ['Pria', 'Wanita'],
+            'opt_tingkat_bahasa' => ['Baik', 'Sedang', 'Buruk'],
         ];
 
         echo view('bo/pages/v_header', $data);
@@ -100,17 +103,23 @@ class PekerjaController extends BaseController
 
     public function edit($id)
     {
+        $row_pekerja = $this->pekerjaModel->where('id_pekerja', decrypt_data($id))->first();
+
         $data = [
             'title' => 'Edit Data Pekerja',
             'open_data' => 'show',
             'show_pekerja' => 'show',
             'active_pekerja' => 'active',
-            'row_pekerja' => $this->pekerjaModel->where('id_pekerja', decrypt_data($id))->first(),
+            'row_pekerja' => $row_pekerja,
             'dt_status_kepegawaian' => $this->statusKepegawaianModel->where('status', 1)->findAll(),
             'dt_jenis_tenaga_ahli' => $this->jenisTenagaAhliModel->where('status', 1)->findAll(),
             'dt_country' => $this->countryModel->findAll(),
             'dt_province' => $this->provinceModel->findAll(),
+            'dt_kabupaten' => $this->regencyModel->orderBy('nama_kabupaten', 'asc')->findAll(), // ✅ tambah
             'dt_pendidikan_akhir' => $this->pendidikanAkhirModel->findAll(),
+            'opt_jenis_kelamin' => ['Pria', 'Wanita'],
+            'opt_tingkat_bahasa' => ['Baik', 'Sedang', 'Buruk'],
+            'dt_kabupaten_domisili' => !empty($row_pekerja['id_provinsi_domisili']) ? $this->regencyModel->getSpecificRegency($row_pekerja['id_provinsi_domisili']) : [],
         ];
 
         echo view('bo/pages/v_header', $data);
@@ -152,98 +161,153 @@ class PekerjaController extends BaseController
 
     public function importExample()
     {
+        $dt_status = $this->statusKepegawaianModel->where('status', 1)->findAll();
+        $dt_jenis = $this->jenisTenagaAhliModel->where('status', 1)->findAll();
+        $dt_pendidikan = $this->pendidikanAkhirModel->findAll();
+
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+
+        $optSheet = $spreadsheet->createSheet();
+        $optSheet->setTitle('_options');
+
+        foreach ($dt_status as $i => $row) {
+            $optSheet->setCellValue('A' . ($i + 1), $row['nama_status']);
+        }
+
+        foreach ($dt_jenis as $i => $row) {
+            $optSheet->setCellValue('B' . ($i + 1), $row['nama_jenis']);
+        }
+
+        foreach ($dt_pendidikan as $i => $row) {
+            $optSheet->setCellValue('C' . ($i + 1), $row['nama_pendidikan_akhir']);
+        }
+
+        $optSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+
+        $sheet = $spreadsheet->getSheet(0);
+        $spreadsheet->setActiveSheetIndex(0);
 
         $headers = [
-            'nama',
-            'status_kepegawaian',
-            'jenis_tenaga_ahli',
-            'kewarganegaraan',
-            'nik_paspor',
-            'npwp',
-            'no_bpjs_kesehatan',
-            'no_bpjs_ketenagakerjaan',
-            'negara_tempat_lahir',
-            'kabupaten_tempat_lahir',
-            'tanggal_lahir',
-            'jenis_kelamin',
-            'email',
-            'telepon',
-            'website',
-            'alamat',
-            'provinsi_domisili',
-            'kabupaten_domisili',
-            'lama_pengalaman_kerja_tahun',
-            'tingkat_bahasa_indonesia',
-            'tingkat_bahasa_inggris',
-            'tingkat_bahasa_setempat',
-            'pendidikan_formal',
-            'pendidikan_non_formal',
-            'pendidikan_akhir',
-            'profesi_keahlian',
+            'A' => 'nama',
+            'B' => 'id_status_kepegawaian',
+            'C' => 'id_jenis_tenaga_ahli',
+            'D' => 'kewarganegaraan',
+            'E' => 'nik_paspor',
+            'F' => 'npwp',
+            'G' => 'no_bpjs_kesehatan',
+            'H' => 'no_bpjs_ketenagakerjaan',
+            'I' => 'id_negara_tempat_lahir',
+            'J' => 'id_kabupaten_tempat_lahir',
+            'K' => 'tanggal_lahir',
+            'L' => 'jenis_kelamin',
+            'M' => 'email',
+            'N' => 'telepon',
+            'O' => 'website',
+            'P' => 'alamat',
+            'Q' => 'id_provinsi_domisili',
+            'R' => 'id_kabupaten_domisili',
+            'S' => 'lama_pengalaman_kerja_tahun',
+            'T' => 'tingkat_bahasa_indonesia',
+            'U' => 'tingkat_bahasa_inggris',
+            'V' => 'tingkat_bahasa_setempat',
+            'W' => 'pendidikan_formal',
+            'X' => 'pendidikan_non_formal',
+            'Y' => 'id_pendidikan_akhir',
+            'Z' => 'profesi_keahlian',
         ];
 
-        $col = 'A';
-        foreach ($headers as $header) {
+        foreach ($headers as $col => $header) {
             $sheet->setCellValue($col . '1', $header);
-            $col++;
         }
 
-        $data = [
-            'John Doe',
-            'Pegawai Tetap',
-            'Tenaga Ahli Sipil',
-            'Indonesia',
-            '1234567890123456',
-            '12.345.678.9-012.345',
-            '0001234567890',
-            '0001234567890',
-            'Indonesia',
-            'Kota Surabaya',
-            '1990-01-01',
-            'Pria',
-            'john.doe@email.com',
-            '08123456789',
-            'https://example.com',
-            'Jl. Contoh No. 1, Surabaya',
-            'Jawa Timur',
-            'Kota Surabaya',
-            '5',
-            'Aktif',
-            'Pasif',
-            'Pasif',
-            'S1 Teknik Sipil - Universitas Contoh (2010-2014)',
-            'Pelatihan AutoCAD (2015)',
-            'S1',
-            'Struktur, Jalan, Jembatan',
+        $contoh = [
+            'A' => 'John Doe',
+            'B' => $dt_status[0]['nama_status'] ?? 'Tetap',
+            'C' => $dt_jenis[0]['nama_jenis'] ?? 'Individu WNI',
+            'D' => 'Indonesia',
+            'E' => '1234567890123456',
+            'F' => '12.345.678.9-012.345',
+            'G' => '0001234567890',
+            'H' => '0001234567890',
+            'I' => 'Indonesia',
+            'J' => 'Kota Surabaya',
+            'K' => '1990-01-01',
+            'L' => 'Pria',
+            'M' => 'john.doe@email.com',
+            'N' => '08123456789',
+            'O' => 'https://example.com',
+            'P' => 'Jl. Contoh No. 1, Surabaya',
+            'Q' => 'Jawa Timur',
+            'R' => 'Kota Surabaya',
+            'S' => '5',
+            'T' => 'Baik',
+            'U' => 'Sedang',
+            'V' => 'Buruk',
+            'W' => 'S1 Teknik Sipil - Universitas Contoh (2010-2014)',
+            'X' => 'Pelatihan AutoCAD (2015)',
+            'Y' => $dt_pendidikan[6]['nama_pendidikan_akhir'] ?? 'S1',
+            'Z' => 'Struktur, Jalan, Jembatan',
         ];
 
-        $col = 'A';
-        foreach ($data as $d) {
-            $sheet->setCellValue($col . '2', $d);
-            $col++;
+        foreach ($contoh as $col => $value) {
+            $sheet->setCellValue($col . '2', $value);
         }
+
+        $maxRow = 1001;
+        $applyDropdown = function (string $col, string $formula) use ($sheet, $maxRow) {
+            $range = "{$col}2:{$col}{$maxRow}";
+            $validation = $sheet->getCell("{$col}2")->getDataValidation();
+            $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowDropDown(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setErrorTitle('Nilai tidak valid');
+            $validation->setError('Silahkan pilih nilai dari daftar yang tersedia.');
+            $validation->setShowInputMessage(true);
+            $validation->setPromptTitle('Pilih dari daftar');
+            $validation->setPrompt('Klik dropdown untuk memilih nilai yang tersedia.');
+            $validation->setFormula1($formula);
+            $validation->setSqref($range);
+        };
+
+        $statusCount = count($dt_status);
+        $applyDropdown('B', "_options!\$A\$1:\$A\${$statusCount}");
+
+        $jenisCount = count($dt_jenis);
+        $applyDropdown('C', "_options!\$B\$1:\$B\${$jenisCount}");
+
+        $applyDropdown('L', '"Pria,Wanita"');
+
+        $applyDropdown('T', '"Baik,Sedang,Buruk"');
+        $applyDropdown('U', '"Baik,Sedang,Buruk"');
+        $applyDropdown('V', '"Baik,Sedang,Buruk"');
+
+        $pendidikanCount = count($dt_pendidikan);
+        $applyDropdown('Y', "_options!\$C\$1:\$C\${$pendidikanCount}");
 
         $comments = [
-            'B' => 'Pastikan nama status kepegawaian sesuai dengan data master status kepegawaian pada sistem',
-            'C' => 'Pastikan nama jenis tenaga ahli sesuai dengan data master jenis tenaga ahli pada sistem',
-            'D' => 'Pastikan nama negara kewarganegaraan sesuai dengan data master negara pada sistem',
-            'I' => 'Pastikan nama negara tempat lahir sesuai dengan data master negara pada sistem',
-            'J' => 'Pastikan nama kabupaten tempat lahir sesuai dengan data master kabupaten pada sistem',
-            'Q' => 'Pastikan nama provinsi domisili sesuai dengan data master provinsi pada sistem',
-            'R' => 'Pastikan nama kabupaten domisili sesuai dengan data master kabupaten pada sistem',
-            'Y' => 'Pastikan pendidikan akhir sesuai dengan data master pendidikan akhir pada sistem',
+            'B' => 'Pilih dari dropdown. Pastikan sesuai data master status kepegawaian.',
+            'C' => 'Pilih dari dropdown: Individu WNI atau Individu WNA.',
+            'D' => 'Pastikan nama negara sesuai data master negara pada sistem.',
+            'I' => 'Pastikan nama negara tempat lahir sesuai data master negara pada sistem.',
+            'J' => 'Pastikan nama kabupaten sesuai data master kabupaten pada sistem.',
+            'L' => 'Pilih dari dropdown: Pria atau Wanita.',
+            'Q' => 'Pastikan nama provinsi sesuai data master provinsi pada sistem.',
+            'R' => 'Pastikan nama kabupaten sesuai data master kabupaten pada sistem.',
+            'T' => 'Pilih dari dropdown: Baik, Sedang, atau Buruk.',
+            'U' => 'Pilih dari dropdown: Baik, Sedang, atau Buruk.',
+            'V' => 'Pilih dari dropdown: Baik, Sedang, atau Buruk.',
+            'Y' => 'Pilih dari dropdown sesuai jenjang pendidikan terakhir.',
         ];
 
-        foreach ($comments as $cellCol => $text) {
-            $comment = $sheet->getComment($cellCol . '1');
+        foreach ($comments as $col => $text) {
+            $comment = $sheet->getComment($col . '1');
             $comment->getText()->createTextRun($text);
             $comment->setAuthor('Sistem SISURO');
         }
 
         $filename = 'Master import pekerja.xlsx';
-
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -272,16 +336,13 @@ class PekerjaController extends BaseController
                 throw new ValidationException('Format file harus .xlsx atau .xls');
             }
 
-            $path = $file->getTempName();
-
-            $spreadsheet = IOFactory::load($path);
-            $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray();
+            $spreadsheet = IOFactory::load($file->getTempName());
+            $rows = $spreadsheet->getActiveSheet()->toArray();
 
             array_shift($rows);
 
             $statusKepegawaianMap = map_by_name($this->statusKepegawaianModel->findAll(), 'nama_status');
-            $jenisTenagaAhliMap  = map_by_name($this->jenisTenagaAhliModel->findAll(), 'nama_jenis');
+            $jenisTenagaAhliMap = map_by_name($this->jenisTenagaAhliModel->findAll(), 'nama_jenis');
             $countryMap = map_by_name($this->countryModel->findAll(), 'nama_negara');
             $provinceMap = map_by_name($this->provinceModel->findAll(), 'nama_provinsi');
             $pendidikanAkhirMap = map_by_name($this->pendidikanAkhirModel->findAll(), 'nama_pendidikan_akhir');
@@ -295,17 +356,20 @@ class PekerjaController extends BaseController
                 $row_kewarganegaraan = $countryMap[normalize($row[3])] ?? null;
                 $row_negara_lahir = $countryMap[normalize($row[8])] ?? null;
 
-                $builder_kab_lahir = $this->regencyModel->like('LOWER(nama_kabupaten)', normalize($row[9]));
-                $row_kab_lahir = $builder_kab_lahir->first();
+                $row_kab_lahir = $this->regencyModel
+                    ->like('nama_kabupaten', normalize($row[9]), 'both', null, true)
+                    ->first();
 
                 $row_provinsi_domisili = $provinceMap[normalize($row[16])] ?? null;
 
-                $builder_kab_domisili = $this->regencyModel->like('LOWER(nama_kabupaten)', normalize($row[17]));
-                if (!empty($row_provinsi_domisili)) {
-                    $builder_kab_domisili->where('id_provinsi', $row_provinsi_domisili['id']);
-                }
-                $row_kab_domisili = $builder_kab_domisili->first();
+                $kab_domisili_builder = $this->regencyModel
+                    ->like('nama_kabupaten', normalize($row[17]), 'both', null, true);
 
+                if (!empty($row_provinsi_domisili)) {
+                    $kab_domisili_builder->where('id_provinsi', $row_provinsi_domisili['id']);
+                }
+
+                $row_kab_domisili = $kab_domisili_builder->first();
                 $row_pendidikan_akhir = $pendidikanAkhirMap[normalize($row[24])] ?? null;
 
                 $insertBatch[] = [
@@ -313,10 +377,10 @@ class PekerjaController extends BaseController
                     'id_status_kepegawaian' => $row_status_kepegawaian['id_status'] ?? null,
                     'id_jenis_tenaga_ahli' => $row_jenis_tenaga_ahli['id_jenis'] ?? null,
                     'id_kewarganegaraan' => $row_kewarganegaraan['id_negara'] ?? null,
-                    'nik_paspor' => $row[4]  ?? null,
-                    'npwp' => $row[5]  ?? null,
-                    'no_bpjs_kesehatan' => $row[6]  ?? null,
-                    'no_bpjs_ketenagakerjaan' => $row[7]  ?? null,
+                    'nik_paspor' => $row[4] ?? null,
+                    'npwp' => $row[5] ?? null,
+                    'no_bpjs_kesehatan' => $row[6] ?? null,
+                    'no_bpjs_ketenagakerjaan' => $row[7] ?? null,
                     'id_negara_tempat_lahir' => $row_negara_lahir['id_negara'] ?? null,
                     'id_kabupaten_tempat_lahir' => $row_kab_lahir['id_kabupaten'] ?? null,
                     'tanggal_lahir' => $row[10] ?? null,
@@ -356,7 +420,6 @@ class PekerjaController extends BaseController
     public function export()
     {
         $dt_pekerja = $this->pekerjaModel->getAllData();
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -415,15 +478,15 @@ class PekerjaController extends BaseController
                 $row['email'] ?? '',
                 $row['telepon'] ?? '',
                 $row['website'] ?? '',
-                strip_tags($row['alamat']) ?? '',
+                strip_tags($row['alamat'] ?? ''),
                 $row['provinsi_domisili'] ?? '',
                 $row['kabupaten_domisili'] ?? '',
                 $row['lama_pengalaman_kerja_tahun'] ?? '',
                 $row['tingkat_bahasa_indonesia'] ?? '',
                 $row['tingkat_bahasa_inggris'] ?? '',
                 $row['tingkat_bahasa_setempat'] ?? '',
-                strip_tags($row['pendidikan_formal']) ?? '',
-                strip_tags($row['pendidikan_non_formal']) ?? '',
+                strip_tags($row['pendidikan_formal'] ?? ''),
+                strip_tags($row['pendidikan_non_formal'] ?? ''),
                 $row['nama_pendidikan_akhir'] ?? '',
                 $row['profesi_keahlian'] ?? '',
             ];
@@ -433,7 +496,6 @@ class PekerjaController extends BaseController
         }
 
         $filename = 'Data pekerja ' . date('Y-m-d') . '.xlsx';
-
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');

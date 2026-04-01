@@ -7,14 +7,14 @@ use CodeIgniter\Model;
 class PendidikanAkhirModel extends Model
 {
     protected $table            = 'tb_pendidikan_akhir';
-    protected $primaryKey       = 'id_pendidikan';
+    protected $primaryKey       = 'id_pendidikan_akhir';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'jenjang',
-        'nama_pendidikan',
+        'nama_pendidikan_akhir',
         'status',
         'rowstatus',
         'createdon',

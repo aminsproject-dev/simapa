@@ -8,14 +8,12 @@
                 <div class="card">
                     <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
                         <h5 class="py-sm-2 my-sm-1"><?= $title; ?></h5>
-                        <div class="mt-2 mt-sm-0 ms-sm-auto d-flex gap-2">
-                        </div>
+                        <div class="mt-2 mt-sm-0 ms-sm-auto d-flex gap-2"></div>
                     </div>
 
                     <form action="<?= base_url('pekerja/update/' . encrypt_data($row_pekerja['id_pekerja'])); ?>" method="post">
                         <?= csrf_field(); ?>
                         <div class="card-body">
-
 
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Data Pribadi</label>
@@ -69,8 +67,11 @@
                                 <div class="col-lg-4">
                                     <select name="jenis_kelamin" class="form-control select-search" required>
                                         <option value="">Silahkan pilih jenis kelamin</option>
-                                        <option value="Laki-laki" <?= (old('jenis_kelamin') ?: $row_pekerja['jenis_kelamin']) == 'Laki-laki' ? 'selected' : ''; ?>>Laki-laki</option>
-                                        <option value="Perempuan" <?= (old('jenis_kelamin') ?: $row_pekerja['jenis_kelamin']) == 'Perempuan' ? 'selected' : ''; ?>>Perempuan</option>
+                                        <?php foreach ($opt_jenis_kelamin as $opt): ?>
+                                            <option value="<?= $opt ?>" <?= (old('jenis_kelamin') ?: $row_pekerja['jenis_kelamin']) == $opt ? 'selected' : ''; ?>>
+                                                <?= $opt ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
@@ -97,7 +98,6 @@
                                 </div>
                             </div>
 
-
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Tempat & Tanggal Lahir</label>
                             </div>
@@ -108,7 +108,8 @@
                                     <select name="id_negara_tempat_lahir" class="form-control select-search" required>
                                         <option value="">Silahkan pilih negara</option>
                                         <?php foreach ($dt_country as $country) { ?>
-                                            <option value="<?= $country['id_negara']; ?>" <?= (old('id_negara_tempat_lahir') ?: $row_pekerja['id_negara_tempat_lahir']) == $country['id_negara'] ? 'selected' : ''; ?>>
+                                            <option value="<?= $country['id_negara']; ?>"
+                                                <?= (old('id_negara_tempat_lahir') ?: $row_pekerja['id_negara_tempat_lahir']) == $country['id_negara'] ? 'selected' : ''; ?>>
                                                 <?= $country['nama_negara']; ?>
                                             </option>
                                         <?php } ?>
@@ -116,30 +117,27 @@
                                 </div>
                                 <label class="col-lg-2 col-form-label text-lg-end">Tanggal Lahir <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <input type="text" name="tanggal_lahir" value="<?= old('tanggal_lahir') ?: $row_pekerja['tanggal_lahir']; ?>" class="form-control daterange-single" placeholder="Masukkan tanggal lahir" required>
+                                    <input type="text" name="tanggal_lahir"
+                                        value="<?= old('tanggal_lahir') ?: $row_pekerja['tanggal_lahir']; ?>"
+                                        class="form-control daterange-single" placeholder="Masukkan tanggal lahir" required>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
-                                <label class="col-lg-2 col-form-label text-lg-end">Provinsi Tempat Lahir</label>
+                                <label class="col-lg-2 col-form-label text-lg-end">Kota/Kabupaten Tempat Lahir <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
-                                    <select id="id_provinsi_tempat_lahir" class="form-control select-search">
-                                        <option value="">Silahkan pilih provinsi</option>
-                                        <?php foreach ($dt_province as $province) { ?>
-                                            <option value="<?= $province['id']; ?>">
-                                                <?= $province['nama_provinsi']; ?>
+                                    <select name="id_kabupaten_tempat_lahir" id="id_kabupaten_tempat_lahir"
+                                        class="form-control select-search" required>
+                                        <option value="">Silahkan pilih kota/kabupaten</option>
+                                        <?php foreach ($dt_kabupaten as $kab) { ?>
+                                            <option value="<?= $kab['id_kabupaten']; ?>"
+                                                <?= (old('id_kabupaten_tempat_lahir') ?: $row_pekerja['id_kabupaten_tempat_lahir']) == $kab['id_kabupaten'] ? 'selected' : ''; ?>>
+                                                <?= $kab['nama_kabupaten']; ?>
                                             </option>
                                         <?php } ?>
                                     </select>
                                 </div>
-                                <label class="col-lg-2 col-form-label text-lg-end">Kabupaten Tempat Lahir <span class="text-danger">*</span></label>
-                                <div class="col-lg-4">
-                                    <select name="id_kabupaten_tempat_lahir" id="id_kabupaten_tempat_lahir" class="form-control select-search" required>
-                                        <option value="">Silahkan pilih kota/kabupaten</option>
-                                    </select>
-                                </div>
                             </div>
-
 
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Kontak & Alamat</label>
@@ -186,10 +184,14 @@
                                 <div class="col-lg-4">
                                     <select name="id_kabupaten_domisili" id="id_kabupaten_domisili" class="form-control select-search" required>
                                         <option value="">Silahkan pilih kota/kabupaten domisili</option>
+                                        <?php foreach ($dt_kabupaten_domisili as $kab) { ?>
+                                            <option value="<?= $kab['id_kabupaten']; ?>" <?= (old('id_kabupaten_domisili') ?: $row_pekerja['id_kabupaten_domisili']) == $kab['id_kabupaten'] ? 'selected' : ''; ?>>
+                                                <?= $kab['nama_kabupaten']; ?>
+                                            </option>
+                                        <?php } ?>
                                     </select>
                                 </div>
                             </div>
-
 
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Pengalaman Kerja</label>
@@ -209,7 +211,6 @@
                                 </div>
                             </div>
 
-
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Kemampuan Bahasa</label>
                             </div>
@@ -219,20 +220,22 @@
                                 <div class="col-lg-4">
                                     <select name="tingkat_bahasa_indonesia" class="form-control select-search" required>
                                         <option value="">Silahkan pilih tingkat kemampuan</option>
-                                        <option value="Tidak Ada" <?= (old('tingkat_bahasa_indonesia') ?: $row_pekerja['tingkat_bahasa_indonesia']) == 'Tidak Ada' ? 'selected' : ''; ?>>Tidak Ada</option>
-                                        <option value="Pasif" <?= (old('tingkat_bahasa_indonesia') ?: $row_pekerja['tingkat_bahasa_indonesia']) == 'Pasif' ? 'selected' : ''; ?>>Pasif</option>
-                                        <option value="Aktif" <?= (old('tingkat_bahasa_indonesia') ?: $row_pekerja['tingkat_bahasa_indonesia']) == 'Aktif' ? 'selected' : ''; ?>>Aktif</option>
-                                        <option value="Sangat Aktif" <?= (old('tingkat_bahasa_indonesia') ?: $row_pekerja['tingkat_bahasa_indonesia']) == 'Sangat Aktif' ? 'selected' : ''; ?>>Sangat Aktif</option>
+                                        <?php foreach ($opt_tingkat_bahasa as $opt): ?>
+                                            <option value="<?= $opt ?>" <?= (old('tingkat_bahasa_indonesia') ?: $row_pekerja['tingkat_bahasa_indonesia']) == $opt ? 'selected' : ''; ?>>
+                                                <?= $opt ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                                 <label class="col-lg-2 col-form-label text-lg-end">Bahasa Inggris <span class="text-danger">*</span></label>
                                 <div class="col-lg-4">
                                     <select name="tingkat_bahasa_inggris" class="form-control select-search" required>
                                         <option value="">Silahkan pilih tingkat kemampuan</option>
-                                        <option value="Tidak Ada" <?= (old('tingkat_bahasa_inggris') ?: $row_pekerja['tingkat_bahasa_inggris']) == 'Tidak Ada' ? 'selected' : ''; ?>>Tidak Ada</option>
-                                        <option value="Pasif" <?= (old('tingkat_bahasa_inggris') ?: $row_pekerja['tingkat_bahasa_inggris']) == 'Pasif' ? 'selected' : ''; ?>>Pasif</option>
-                                        <option value="Aktif" <?= (old('tingkat_bahasa_inggris') ?: $row_pekerja['tingkat_bahasa_inggris']) == 'Aktif' ? 'selected' : ''; ?>>Aktif</option>
-                                        <option value="Sangat Aktif" <?= (old('tingkat_bahasa_inggris') ?: $row_pekerja['tingkat_bahasa_inggris']) == 'Sangat Aktif' ? 'selected' : ''; ?>>Sangat Aktif</option>
+                                        <?php foreach ($opt_tingkat_bahasa as $opt): ?>
+                                            <option value="<?= $opt ?>" <?= (old('tingkat_bahasa_inggris') ?: $row_pekerja['tingkat_bahasa_inggris']) == $opt ? 'selected' : ''; ?>>
+                                                <?= $opt ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
@@ -242,14 +245,14 @@
                                 <div class="col-lg-4">
                                     <select name="tingkat_bahasa_setempat" class="form-control select-search">
                                         <option value="">Silahkan pilih tingkat kemampuan</option>
-                                        <option value="Tidak Ada" <?= (old('tingkat_bahasa_setempat') ?: $row_pekerja['tingkat_bahasa_setempat']) == 'Tidak Ada' ? 'selected' : ''; ?>>Tidak Ada</option>
-                                        <option value="Pasif" <?= (old('tingkat_bahasa_setempat') ?: $row_pekerja['tingkat_bahasa_setempat']) == 'Pasif' ? 'selected' : ''; ?>>Pasif</option>
-                                        <option value="Aktif" <?= (old('tingkat_bahasa_setempat') ?: $row_pekerja['tingkat_bahasa_setempat']) == 'Aktif' ? 'selected' : ''; ?>>Aktif</option>
-                                        <option value="Sangat Aktif" <?= (old('tingkat_bahasa_setempat') ?: $row_pekerja['tingkat_bahasa_setempat']) == 'Sangat Aktif' ? 'selected' : ''; ?>>Sangat Aktif</option>
+                                        <?php foreach ($opt_tingkat_bahasa as $opt): ?>
+                                            <option value="<?= $opt ?>" <?= (old('tingkat_bahasa_setempat') ?: $row_pekerja['tingkat_bahasa_setempat']) == $opt ? 'selected' : ''; ?>>
+                                                <?= $opt ?>
+                                            </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
-
 
                             <div class="row mb-3 border-bottom">
                                 <label class="col-lg-2 col-form-label fw-bold">Pendidikan</label>
@@ -280,23 +283,6 @@
                                 </div>
                             </div>
 
-
-                            <div class="row mb-3 border-bottom">
-                                <label class="col-lg-2 col-form-label fw-bold">Status Data</label>
-                            </div>
-
-                            <div class="row mb-3">
-                                <label class="col-lg-2 col-form-label text-lg-end">Status <span class="text-danger">*</span></label>
-                                <div class="col-lg-10">
-                                    <select name="status" class="form-control select-search" required>
-                                        <option value="">Silahkan pilih status</option>
-                                        <option value="1" <?= (old('status') ?: $row_pekerja['status']) == 1 ? 'selected' : ''; ?>>Aktif</option>
-                                        <option value="0" <?= (old('status') ?: $row_pekerja['status']) == 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
-                                    </select>
-                                </div>
-                            </div>
-
-
                             <div class="text-muted"><span class="text-danger">*</span>) Wajib di isi</div>
 
                         </div>
@@ -317,66 +303,58 @@
 
     </div>
 </div>
-<!-- /main content -->
-
 
 <script>
-    jQuery(function($) {
+    $(document).ready(function() {
 
-        // Load kabupaten dengan nilai terpilih saat halaman dibuka
-        getRegency(
-            "#id_provinsi_domisili",
-            "#id_kabupaten_domisili",
-            '<?= $row_pekerja['id_kabupaten_domisili']; ?>'
-        );
+        function refreshSelect2(elId) {
+            $(elId).select2({
+                width: '100%'
+            });
+        }
 
-        getRegency(
-            "#id_provinsi_tempat_lahir",
-            "#id_kabupaten_tempat_lahir",
-            '<?= $row_pekerja['id_kabupaten_tempat_lahir']; ?>'
-        );
+        function loadKabupaten(id_provinsi, elTarget, selectedId = null) {
+            if (!id_provinsi) {
+                $(elTarget).html("<option value=''>Silahkan pilih provinsi terlebih dahulu</option>");
+                refreshSelect2(elTarget);
+                return;
+            }
 
-        // Event change provinsi domisili
-        $('#id_provinsi_domisili').on("select2:select", function() {
-            getRegency(this, "#id_kabupaten_domisili", null);
-        });
+            $(elTarget).html("<option value=''>Memuat data...</option>");
 
-        // Event change provinsi tempat lahir (helper, tidak disimpan)
-        $('#id_provinsi_tempat_lahir').on("select2:select", function() {
-            getRegency(this, "#id_kabupaten_tempat_lahir", null);
-        });
-
-        function getRegency(elSource, elTarget, value) {
-            var val = $(elSource).val();
             $.ajax({
-                url: "<?= base_url('master/regency/get-specific'); ?>",
+                url: "<?= base_url('regency/get-specific'); ?>",
                 type: 'GET',
                 data: {
-                    'id': val
+                    id: id_provinsi
                 },
                 success: function(data) {
-                    $(elTarget).html("");
-                    $(elTarget).append("<option value=''>Pilih kota/kabupaten</option>");
-                    $.each(JSON.parse(data), function(key, i) {
-                        if (value && value == this.id_kabupaten) {
-                            $(elTarget).append(
-                                "<option value='" + this.id_kabupaten + "' selected>" + this.nama_kabupaten + "</option>"
-                            );
-                        } else {
-                            $(elTarget).append(
-                                "<option value='" + this.id_kabupaten + "'>" + this.nama_kabupaten + "</option>"
-                            );
-                        }
+                    var options = "<option value=''>Silahkan pilih kota/kabupaten</option>";
+                    $.each(data, function() {
+                        var selected = (selectedId && selectedId == this.id_kabupaten) ? ' selected' : '';
+                        options += "<option value='" + this.id_kabupaten + "'" + selected + ">" +
+                            this.nama_kabupaten + "</option>";
                     });
-
-                    // Refresh select2 setelah data dimuat
-                    $(elTarget).trigger('change');
+                    $(elTarget).html(options);
+                    refreshSelect2(elTarget);
                 },
                 error: function() {
-                    alert('Gagal mendapatkan data kabupaten!');
+                    $(elTarget).html("<option value=''>Gagal memuat data</option>");
+                    refreshSelect2(elTarget);
                 }
             });
         }
+
+        var savedProvinsiDomisili = "<?= $row_pekerja['id_provinsi_domisili'] ?? ''; ?>";
+        var savedKabupatenDomisili = "<?= $row_pekerja['id_kabupaten_domisili'] ?? ''; ?>";
+
+        if (savedProvinsiDomisili) {
+            loadKabupaten(savedProvinsiDomisili, '#id_kabupaten_domisili', savedKabupatenDomisili);
+        }
+
+        $('#id_provinsi_domisili').on('change', function() {
+            loadKabupaten($(this).val(), '#id_kabupaten_domisili');
+        });
 
     });
 </script>

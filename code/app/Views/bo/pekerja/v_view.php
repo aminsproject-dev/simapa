@@ -84,16 +84,6 @@
                                                 <td>No. BPJS Ketenagakerjaan</td>
                                                 <td><?= $row_pekerja['no_bpjs_ketenagakerjaan'] ?? '-'; ?></td>
                                             </tr>
-                                            <tr>
-                                                <td>Status Data</td>
-                                                <td>
-                                                    <?php if ($row_pekerja['status'] == 1): ?>
-                                                        <span class="badge bg-success">Aktif</span>
-                                                    <?php else: ?>
-                                                        <span class="badge bg-danger">Tidak Aktif</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -271,3 +261,25 @@
     </div>
 </div>
 <!-- /main content -->
+
+<script>
+    $(document).on('click', '.sweet_warning_custom', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).data('url');
+        Swal.fire({
+            title: 'Hapus Data?',
+            text: 'Data yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e53935',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+    });
+</script>
