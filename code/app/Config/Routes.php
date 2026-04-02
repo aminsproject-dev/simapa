@@ -83,6 +83,16 @@ $routes->group('/pengalaman', [
     $routes->get('export', 'PengalamanPekerjaanController::export');
 });
 
+$routes->group('/pengalaman-pekerja', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('add/(:segment)', 'PengalamanPekerjaController::add/$1');
+    $routes->get('get-available/(:segment)', 'PengalamanPekerjaController::getAvailable/$1');
+    $routes->post('save', 'PengalamanPekerjaController::save');
+    $routes->get('delete/(:segment)', 'PengalamanPekerjaController::delete/$1');
+});
+
 $routes->group('/marketing', [
     'filter' => 'authGuard',
     'namespace' => 'App\Controllers\Bo\Marketing',

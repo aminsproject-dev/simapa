@@ -61,7 +61,7 @@
                                     <select name="id_kategori_pekerjaan" class="form-control select-search" required>
                                         <option value="">Silahkan pilih kategori</option>
                                         <?php foreach ($dt_kategori as $kategori) { ?>
-                                            <option value="<?= $kategori['id_kategori']; ?>" <?= (old('id_kategori_pekerjaan') ?: $row_pengalaman['id_kategori_pekerjaan']) == $kategori['id_kategori'] ? 'selected' : ''; ?>><?= $kategori['nama_kategori']; ?></option>
+                                            <option value="<?= $kategori['id_kategori_pekerjaan']; ?>" <?= (old('id_kategori_pekerjaan') ?: $row_pengalaman['id_kategori_pekerjaan']) == $kategori['id_kategori_pekerjaan'] ? 'selected' : ''; ?>><?= $kategori['nama_kategori_pekerjaan']; ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>

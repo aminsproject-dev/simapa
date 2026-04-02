@@ -15,6 +15,16 @@
                     <div class="card-body">
 
                         <div class="text-end mb-3">
+                            <a href="<?= base_url('pengalaman-pekerja/add/' . encrypt_data($row_pekerja['id_pekerja'])); ?>">
+                                <button type="button" class="btn btn-primary btn-labeled btn-labeled-start btn-sm my-1"
+                                    data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Tambah pengalaman kontrak">
+                                    <span class="btn-labeled-icon bg-black bg-opacity-20">
+                                        <i class="ph-plus ph-lg"></i>
+                                    </span>
+                                    Tambah Pengalaman
+                                </button>
+                            </a>
+
                             <a href="<?= base_url('pekerja/edit/' . encrypt_data($row_pekerja['id_pekerja'])); ?>">
                                 <button type="button" class="btn btn-warning btn-labeled btn-labeled-start btn-sm my-1"
                                     data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Edit data">
@@ -36,9 +46,9 @@
                             </a>
                         </div>
 
-
                         <div class="row">
 
+                            <!-- KOLOM KIRI -->
                             <div class="col-lg-6 col-xs-12">
 
                                 <!-- Data Pribadi -->
@@ -141,7 +151,7 @@
                             </div>
                             <!-- /KOLOM KIRI -->
 
-
+                            <!-- KOLOM KANAN -->
                             <div class="col-lg-6 col-xs-12">
 
                                 <!-- Kontak & Alamat -->
@@ -251,6 +261,97 @@
                             <!-- /KOLOM KANAN -->
 
                         </div>
+                        <!-- /row data pribadi -->
+
+                        <!-- TABEL PENGALAMAN PEKERJA -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border">
+                                    <div class="card-header py-2">
+                                        <h6 class="mb-0">
+                                            <i class="ph-briefcase me-2"></i>
+                                            Riwayat Pengalaman Kontrak
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th width="5%">No</th>
+                                                        <th>Nama Kontrak</th>
+                                                        <th>Nomor Kontrak</th>
+                                                        <th>Tanggal Mulai</th>
+                                                        <th>Tanggal Selesai</th>
+                                                        <th>Nilai Kontrak</th>
+                                                        <th>Tanggal Serah Terima</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php if (!empty($dt_pengalaman)): ?>
+                                                        <?php $no = 1;
+                                                        foreach ($dt_pengalaman as $pengalaman): ?>
+                                                            <tr>
+                                                                <td><?= $no++; ?></td>
+                                                                <td><?= $pengalaman['nama_kontrak'] ?? '-'; ?></td>
+                                                                <td><?= $pengalaman['nomor_kontrak'] ?? '-'; ?></td>
+                                                                <td>
+                                                                    <?= !empty($pengalaman['tanggal_mulai'])
+                                                                        ? date('d-m-Y', strtotime($pengalaman['tanggal_mulai']))
+                                                                        : '-'; ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?= !empty($pengalaman['tanggal_selesai'])
+                                                                        ? date('d-m-Y', strtotime($pengalaman['tanggal_selesai']))
+                                                                        : '-'; ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?= !empty($pengalaman['nilai_kontrak'])
+                                                                        ? 'Rp ' . number_format($pengalaman['nilai_kontrak'], 0, ',', '.')
+                                                                        : '-'; ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?= !empty($pengalaman['tanggal_serah_terima'])
+                                                                        ? date('d-m-Y', strtotime($pengalaman['tanggal_serah_terima']))
+                                                                        : '-'; ?>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <?= match (strtolower($pengalaman['status'] ?? '')) {
+                                                                        'aktif'    => '<span class="badge bg-success bg-opacity-10 text-success">Aktif</span>',
+                                                                        'nonaktif' => '<span class="badge bg-secondary bg-opacity-10 text-secondary">Nonaktif</span>',
+                                                                        default    => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
+                                                                    }; ?>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <a href="#"
+                                                                        class="btn btn-danger btn-sm sweet_warning_hapus_pengalaman"
+                                                                        data-url="<?= site_url('pengalaman-pekerja/delete/' . encrypt_data($pengalaman['id_pengalaman_pekerja'])); ?>"
+                                                                        data-bs-popup="popover"
+                                                                        data-bs-trigger="hover"
+                                                                        data-bs-content="Hapus pengalaman ini">
+                                                                        <i class="ph-trash"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    <?php else: ?>
+                                                        <tr>
+                                                            <td colspan="9" class="text-center text-muted py-4">
+                                                                <i class="ph-folder-open ph-lg me-2"></i>
+                                                                Belum ada data pengalaman kontrak
+                                                            </td>
+                                                        </tr>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /TABEL PENGALAMAN -->
 
                     </div>
                 </div>
@@ -267,8 +368,28 @@
         e.preventDefault();
         var deleteUrl = $(this).data('url');
         Swal.fire({
-            title: 'Hapus Data?',
+            title: 'Hapus Data Pekerja?',
             text: 'Data yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e53935',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = deleteUrl;
+            }
+        });
+    });
+
+    $(document).on('click', '.sweet_warning_hapus_pengalaman', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).data('url');
+        Swal.fire({
+            title: 'Hapus Pengalaman Ini?',
+            text: 'Hanya menghapus keterkaitan, data kontrak tidak akan terhapus.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Ya, Hapus!',

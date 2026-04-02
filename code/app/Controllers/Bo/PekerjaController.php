@@ -10,6 +10,7 @@ use App\Models\CountryModel;
 use App\Models\ProvinceModel;
 use App\Models\RegencyModel;
 use App\Models\PendidikanAkhirModel;
+use App\Models\PengalamanPekerjaModel;
 use CodeIgniter\Validation\Exceptions\ValidationException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -25,6 +26,7 @@ class PekerjaController extends BaseController
     protected $provinceModel;
     protected $regencyModel;
     protected $pendidikanAkhirModel;
+    protected $pengalamanPekerjaModel;
 
     public function __construct()
     {
@@ -35,6 +37,7 @@ class PekerjaController extends BaseController
         $this->provinceModel = new ProvinceModel();
         $this->regencyModel = new RegencyModel();
         $this->pendidikanAkhirModel = new PendidikanAkhirModel();
+        $this->pengalamanPekerjaModel = new PengalamanPekerjaModel();
     }
 
     public function index()
@@ -54,12 +57,15 @@ class PekerjaController extends BaseController
 
     public function view($id)
     {
+        $id_pekerja = decrypt_data($id);
+
         $data = [
             'title' => 'Lihat Data Pekerja',
             'open_data' => 'show',
             'show_pekerja' => 'show',
             'active_pekerja' => 'active',
-            'row_pekerja' => $this->pekerjaModel->getSelectedData(decrypt_data($id)),
+            'row_pekerja' => $this->pekerjaModel->getSelectedData($id_pekerja),
+            'dt_pengalaman' => $this->pengalamanPekerjaModel->getByPekerja($id_pekerja),
         ];
 
         echo view('bo/pages/v_header', $data);
