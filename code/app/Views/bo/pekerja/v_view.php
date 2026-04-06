@@ -263,6 +263,62 @@
                         </div>
                         <!-- /row data pribadi -->
 
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border">
+                                    <div class="card-header py-2">
+                                        <h6 class="mb-0">
+                                            <i class="ph-image me-2"></i>
+                                            Dokumen Foto
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+
+                                            <?php
+                                            $fotoList = [
+                                                'foto_ktp' => 'Foto KTP',
+                                                'foto_ijazah' => 'Foto Ijazah',
+                                                'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
+                                                'foto_npwp' => 'Foto NPWP',
+                                                'foto_sertifikasi' => 'Foto Sertifikasi',
+                                                'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
+                                            ];
+                                            foreach ($fotoList as $fieldName => $label):
+                                                $filename = $row_pekerja[$fieldName] ?? null;
+                                            ?>
+                                                <div class="col-lg-4 col-md-6">
+                                                    <div class="card h-100 border text-center">
+                                                        <div class="card-body p-2">
+                                                            <p class="fw-semibold small mb-2"><?= $label; ?></p>
+                                                            <?php if (!empty($filename)): ?>
+                                                                <a href="<?= base_url('uploads/pekerja/' . $filename); ?>" target="_blank" rel="noopener noreferrer">
+                                                                    <img src="<?= base_url('uploads/pekerja' . $filename); ?>" alt="<?= $label; ?>" class="img-thumbnail w-100" style="max-height: 200px; object-fit: cover;" loading="lazy">
+                                                                </a>
+                                                                <div class="mt-1">
+                                                                    <a href="<?= base_url('uploads/pekerja' . $filename); ?>" target="_blank" class="btn btn-outline-primary btn-xs mt-1" rel="noopener noreferrer">
+                                                                        <i class="ph-arrow-square-out me-1"></i>
+                                                                        Lihat Penuh
+                                                                    </a>
+                                                                </div>
+                                                            <?php else: ?>
+                                                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 160px;">
+                                                                    <div class="text-muted">
+                                                                        <i class="ph-image ph-2x d-block mb-1"></i>
+                                                                        <small>Belum diisi</small>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- TABEL PENGALAMAN PEKERJA -->
                         <div class="row mt-4">
                             <div class="col-12">

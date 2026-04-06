@@ -27,6 +27,15 @@ class PekerjaController extends BaseController
     protected $regencyModel;
     protected $pendidikanAkhirModel;
     protected $pengalamanPekerjaModel;
+    protected array $fotoFields = [
+        'foto_ktp',
+        'foto_ijazah',
+        'foto_transkrip_nilai',
+        'foto_npwp',
+        'foto_sertifikasi',
+        'foto_nilai_sertifikasi',
+    ];
+    protected string $uploadPath = 'public/uploads/pekerja/';
 
     public function __construct()
     {
@@ -38,6 +47,39 @@ class PekerjaController extends BaseController
         $this->regencyModel = new RegencyModel();
         $this->pendidikanAkhirModel = new PendidikanAkhirModel();
         $this->pengalamanPekerjaModel = new PengalamanPekerjaModel();
+
+        if (!is_dir($this->uploadPath)) {
+            mkdir($this->uploadPath, 0755, true);
+        }
+    }
+
+    private function handleFileUpload(string $field): ?string
+    {
+        $file = $this->request->getFile($field);
+
+        if (!$file || !$file->isValid() || $file->hasMoved()) {
+            return null;
+        }
+
+        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/jpg'])) {
+            throw new RuntimeException('File ' . str_replace('_', ' ', $field) . ' harus berupa gambar JPEG');
+        }
+
+        if ($file->getSize() > 2 * 1024 * 1024) {
+            throw new RuntimeException('File ' . str_replace('_', ' ', $field) . ' maksimal 2MB.');
+        }
+
+        $newName = $file->getRandomName();
+        $file->move($this->uploadPath, $newName);
+
+        return $newName;
+    }
+
+    private function deleteOldFile(?string $filename): void
+    {
+        if (!empty($filename) && file_exists($this->uploadPath . $filename)) {
+            unlink($this->uploadPath . $filename);
+        }
     }
 
     public function index()
@@ -99,6 +141,18 @@ class PekerjaController extends BaseController
     {
         $data = $this->request->getPost();
 
+        foreach ($this->fotoFields as $field) {
+            try {
+                $filename = $this->handleFileUpload($field);
+                if ($filename === null) {
+                    return redirect()->back()->withInput()->with('error', 'File ' . str_replace('_', ' ', $field) . ' wajib diisi');
+                }
+                $data[$field] = $filename;
+            } catch (RuntimeException $e) {
+                return redirect()->back()->withInput()->with('error', $e->getMessage());
+            }
+        }
+
         if (!$this->pekerjaModel->insert($data)) {
             log_message('error', (string)$this->pekerjaModel->errors());
             return redirect()->back()->withInput()->with('error', $this->pekerjaModel->errors());
@@ -142,6 +196,22 @@ class PekerjaController extends BaseController
 
         $data = $this->request->getPost();
 
+        foreach ($this->fotoFields as $field) {
+            try {
+                $filename = $this->handleFileUpload($field);
+                if ($filename !== null) {
+                    $this->deleteOldFile($row_pekerja[$field] ?? null);
+                    $data[$field] = $filename;
+                } elseif (empty($row_pekerja[$field])) {
+                    return redirect()->back()->withInput()->with('error', 'File ' . str_replace('_', ' ', $field) . ' wajib diisi');
+                } else {
+                    unset($data[$field]);
+                }
+            } catch (RuntimeException $e) {
+                return redirect()->back()->withInput()->with('error', $e->getMessage());
+            }
+        }
+
         if (!$this->pekerjaModel->update($row_pekerja['id_pekerja'], $data)) {
             log_message('error', (string)$this->pekerjaModel->errors());
             return redirect()->back()->withInput()->with('error', $this->pekerjaModel->errors());
@@ -155,6 +225,10 @@ class PekerjaController extends BaseController
         if (empty($row_pekerja = $this->pekerjaModel->where('id_pekerja', decrypt_data($id))->first())) {
             log_message('alert', 'Data tidak ditemukan');
             return redirect()->back()->withInput()->with('error', 'Data tidak ditemukan');
+        }
+
+        foreach ($this->fotoFields as $field) {
+            $this->deleteOldFile($row_pekerja[$field] ?? null);
         }
 
         if (!$this->pekerjaModel->delete($row_pekerja['id_pekerja'])) {

@@ -39,6 +39,12 @@ class PekerjaModel extends Model
         'pendidikan_non_formal',
         'id_pendidikan_akhir',
         'profesi_keahlian',
+        'foto_ktp',
+        'foto_ijazah',
+        'foto_transkrip_nilai',
+        'foto_npwp',
+        'foto_sertifikasi',
+        'foto_nilai_sertifikasi',
         'created_at',
         'updated_at',
     ];
