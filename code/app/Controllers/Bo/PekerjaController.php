@@ -14,6 +14,8 @@ use App\Models\PengalamanPekerjaModel;
 use CodeIgniter\Validation\Exceptions\ValidationException;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use RuntimeException;
 
@@ -35,7 +37,7 @@ class PekerjaController extends BaseController
         'foto_sertifikasi',
         'foto_nilai_sertifikasi',
     ];
-    protected string $uploadPath = 'public/uploads/pekerja/';
+    protected string $uploadPath = WRITEPATH . 'uploads/pekerja/';
 
     public function __construct()
     {
@@ -326,11 +328,18 @@ class PekerjaController extends BaseController
             'W' => 'S1 Teknik Sipil - Universitas Contoh (2010-2014)',
             'X' => 'Pelatihan AutoCAD (2015)',
             'Y' => $dt_pendidikan[6]['nama_pendidikan_akhir'] ?? 'S1',
-            'Z' => 'Struktur, Jalan, Jembatan',
+            'Z' => 'Programmer',
         ];
 
         foreach ($contoh as $col => $value) {
             $sheet->setCellValue($col . '2', $value);
+        }
+
+        $textColumns = ['E', 'F', 'G', 'H', 'J', 'N', 'R'];
+        foreach ($textColumns as $col) {
+            $sheet->getStyle($col . '1:' . $col . '1001')
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_TEXT);
         }
 
         $maxRow = 1001;
@@ -416,6 +425,8 @@ class PekerjaController extends BaseController
                 throw new ValidationException('Format file harus .xlsx atau .xls');
             }
 
+            $reader = IOFactory::createReaderForFile($file->getTempName());
+            $reader->setReadDataOnly(false);
             $spreadsheet = IOFactory::load($file->getTempName());
             $rows = $spreadsheet->getActiveSheet()->toArray();
 
@@ -457,16 +468,16 @@ class PekerjaController extends BaseController
                     'id_status_kepegawaian' => $row_status_kepegawaian['id_status'] ?? null,
                     'id_jenis_tenaga_ahli' => $row_jenis_tenaga_ahli['id_jenis'] ?? null,
                     'id_kewarganegaraan' => $row_kewarganegaraan['id_negara'] ?? null,
-                    'nik_paspor' => $row[4] ?? null,
-                    'npwp' => $row[5] ?? null,
-                    'no_bpjs_kesehatan' => $row[6] ?? null,
-                    'no_bpjs_ketenagakerjaan' => $row[7] ?? null,
+                    'nik_paspor' => isset($row[4]) ? (string) $row[4] : null,
+                    'npwp' => isset($row[5]) ? (string) $row[5] : null,
+                    'no_bpjs_kesehatan' => isset($row[6]) ? (string) $row[6] : null,
+                    'no_bpjs_ketenagakerjaan' => isset($row[7]) ? (string) $row[7] : null,
                     'id_negara_tempat_lahir' => $row_negara_lahir['id_negara'] ?? null,
                     'id_kabupaten_tempat_lahir' => $row_kab_lahir['id_kabupaten'] ?? null,
                     'tanggal_lahir' => $row[10] ?? null,
                     'jenis_kelamin' => $row[11] ?? null,
                     'email' => $row[12] ?? null,
-                    'telepon' => $row[13] ?? null,
+                    'telepon' => isset($row[13]) ? (string) $row[13] : null,
                     'website' => $row[14] ?? null,
                     'alamat' => $row[15] ?? null,
                     'id_provinsi_domisili' => $row_provinsi_domisili['id'] ?? null,
@@ -572,6 +583,22 @@ class PekerjaController extends BaseController
             ];
 
             $sheet->fromArray($dataRow, null, 'A' . $rowNum);
+            $stringFields = [
+                'E' => $row['nik_paspor'] ?? '',
+                'F' => $row['npwp'] ?? '',
+                'G' => $row['no_bpjs_kesehatan'] ?? '',
+                'H' => $row['no_bpjs_ketenagakerjaan'] ?? '',
+                'N' => $row['telepon'] ?? '',
+            ];
+
+            foreach ($stringFields as $colLetter => $value) {
+                $sheet->setCellValueExplicit(
+                    $colLetter . $rowNum,
+                    (string) $value,
+                    DataType::TYPE_STRING
+                );
+            }
+
             $rowNum++;
         }
 
@@ -583,5 +610,26 @@ class PekerjaController extends BaseController
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
+    }
+
+    public function serveFile(string $filename)
+    {
+        $filePath = $this->uploadPath . basename($filename);
+
+        if (!file_exists($filePath)) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak ditemukan');
+        }
+
+        $mime = mime_content_type($filePath);
+
+        if (!in_array($mime, ['image/jpeg', 'image/jpg'])) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('File tidak valid');
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Length', filesize($filePath))
+            ->setHeader('Cache-Control', 'public, max-age=86400')
+            ->setBody(file_get_contents($filePath));
     }
 }

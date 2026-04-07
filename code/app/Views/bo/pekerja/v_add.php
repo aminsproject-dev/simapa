@@ -286,62 +286,55 @@
                                 <div class="card-body">
                                     <div class="row g-3">
 
-                                        <?php
-                                        $fotoList = [
-                                            'foto_ktp' => 'Foto KTP',
-                                            'foto_ijazah' => 'Foto Ijazah',
-                                            'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
-                                            'foto_npwp' => 'Foto NPWP',
-                                            'foto_sertifikasi' => 'Foto Sertifikasi',
-                                            'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
-                                        ];
-                                        foreach ($fotoList as $fieldName => $label):
-                                            $existingFile = $row_pekerja[$fieldName] ?? null;
-                                            $isEdit       = isset($row_pekerja);
-                                        ?>
-                                            <div class="col-lg-4 col-md-6">
-                                                <div class="card h-100 border">
-                                                    <div class="card-body">
-                                                        <label class="form-label fw-semibold">
-                                                            <?= $label; ?>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
+                                        <?php foreach (
+                                            [
+                                                'foto_ktp' => 'Foto KTP',
+                                                'foto_ijazah' => 'Foto Ijazah',
+                                                'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
+                                                'foto_npwp' => 'Foto NPWP',
+                                                'foto_sertifikasi' => 'Foto Sertifikasi',
+                                                'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
+                                            ] as $field => $label
+                                        ): ?>
 
-                                                        <?php if (!empty($existingFile)): ?>
-                                                            <div class="mb-2" id="existing_<?= $fieldName; ?>">
-                                                                <img src="<?= base_url('uploads/pekerja/' . $existingFile); ?>"
-                                                                    alt="<?= $label; ?>"
-                                                                    class="img-thumbnail w-100"
-                                                                    style="max-height: 180px; object-fit: cover; cursor: pointer;"
-                                                                    onclick="window.open(this.src, '_blank')">
-                                                                <div class="text-muted small mt-1">
-                                                                    <i class="ph-check-circle text-success me-1"></i>
-                                                                    File sudah ada. Upload baru untuk mengganti.
-                                                                </div>
-                                                            </div>
-                                                        <?php endif; ?>
+                                            <div class="mb-3">
+                                                <label for="<?= $field; ?>" class="form-label">
+                                                    <?= $label; ?> <span class="text-danger">*</span>
+                                                </label>
 
-                                                        <input type="file"
-                                                            name="<?= $fieldName; ?>"
-                                                            id="<?= $fieldName; ?>"
-                                                            class="form-control foto-input"
-                                                            accept="image/jpeg"
-                                                            data-preview="preview_<?= $fieldName; ?>"
-                                                            <?= empty($existingFile) ? 'required' : ''; ?>>
+                                                <div id="preview_<?= $field; ?>" class="mb-2" style="display: none;">
+                                                    <img id="img_<?= $field; ?>"
+                                                        src=""
+                                                        alt="Preview <?= $label; ?>"
+                                                        class="img-thumbnail"
+                                                        style="max-height: 150px; object-fit: cover;">
+                                                    <div class="mt-1">
+                                                        <small class="text-success fw-semibold">
+                                                            <i class="bi bi-check-circle"></i>
+                                                            Foto siap diupload
+                                                        </small>
 
-                                                        <div class="img-preview-wrapper d-none mt-2" id="preview_<?= $fieldName; ?>">
-                                                            <img src="" alt="Preview <?= $label; ?>"
-                                                                class="img-thumbnail w-100"
-                                                                style="max-height: 180px; object-fit: cover;">
-                                                            <div class="d-flex align-items-center mt-1 text-success small">
-                                                                <i class="ph-check-circle me-1"></i>
-                                                                <span class="preview-filename"></span>
-                                                            </div>
-                                                        </div>
-
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-link text-danger p-0 ms-2"
+                                                            onclick="clearPreview('<?= $field; ?>')">
+                                                            <i class="bi bi-x-circle"></i> Hapus
+                                                        </button>
                                                     </div>
                                                 </div>
+
+                                                <input type="file"
+                                                    class="form-control <?= session('errors.' . $field) ? 'is-invalid' : ''; ?>"
+                                                    id="<?= $field; ?>"
+                                                    name="<?= $field; ?>"
+                                                    accept="image/jpeg, image/jpg"
+                                                    onchange="previewFoto(this, '<?= $field; ?>')"
+                                                    required>
+
+                                                <?php if (session('errors.' . $field)): ?>
+                                                    <div class="invalid-feedback"><?= session('errors.' . $field); ?></div>
+                                                <?php endif; ?>
                                             </div>
+
                                         <?php endforeach; ?>
 
                                     </div>
@@ -374,12 +367,22 @@
     $(document).ready(function() {
 
         function refreshSelect2(elId) {
+            if ($(elId).data('select2')) {
+                $(elId).select2('destroy');
+            }
             $(elId).select2({
-                width: '100%'
+                width: '100%',
+                theme: 'bootstrap4'
             });
         }
 
         function loadKabupaten(id_provinsi, elTarget, selectedId = null) {
+            console.log('loadKabupaten dipanggil:', {
+                id_provinsi: id_provinsi,
+                elTarget: elTarget,
+                selectedId: selectedId
+            });
+
             if (!id_provinsi) {
                 $(elTarget).html("<option value=''>Silahkan pilih provinsi terlebih dahulu</option>");
                 refreshSelect2(elTarget);
@@ -389,82 +392,97 @@
             $(elTarget).html("<option value=''>Memuat data...</option>");
 
             $.ajax({
-                url: "<?= base_url('regency/get-specific'); ?>",
+                url: "<?= base_url('master/regency/get-specific'); ?>",
                 type: 'GET',
+                dataType: 'json',
                 data: {
                     id: id_provinsi
                 },
                 success: function(data) {
+                    console.log('Data kabupaten diterima:', data);
                     var options = "<option value=''>Silahkan pilih kota/kabupaten</option>";
-                    $.each(data, function() {
-                        var selected = (selectedId && selectedId == this.id_kabupaten) ? ' selected' : '';
-                        options += "<option value='" + this.id_kabupaten + "'" + selected + ">" +
-                            this.nama_kabupaten + "</option>";
-                    });
+
+                    if (data && data.length > 0) {
+                        $.each(data, function() {
+                            var selected = (selectedId && selectedId == this.id_kabupaten) ? ' selected' : '';
+                            options += "<option value='" + this.id_kabupaten + "'" + selected + ">" +
+                                this.nama_kabupaten + "</option>";
+                        });
+                    } else {
+                        console.warn('Tidak ada data kabupaten untuk provinsi:', id_provinsi);
+                    }
+
                     $(elTarget).html(options);
                     refreshSelect2(elTarget);
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Gagal memuat data kabupaten:', {
+                        status: status,
+                        error: error,
+                        responseText: xhr.responseText,
+                        url: "<?= base_url('master/regency/get-specific'); ?>",
+                        id_provinsi: id_provinsi
+                    });
                     $(elTarget).html("<option value=''>Gagal memuat data</option>");
                     refreshSelect2(elTarget);
                 }
             });
         }
 
-        $('#id_provinsi_tempat_lahir').on('change', function() {
-            loadKabupaten($(this).val(), '#id_kabupaten_tempat_lahir');
-        });
-
         $('#id_provinsi_domisili').on('change', function() {
-            loadKabupaten($(this).val(), '#id_kabupaten_domisili');
+            var selectedProvince = $(this).val();
+            console.log('Provinsi domisili changed:', selectedProvince);
+
+            if (selectedProvince) {
+                loadKabupaten(selectedProvince, '#id_kabupaten_domisili');
+            } else {
+                $('#id_kabupaten_domisili').html("<option value=''>Silahkan pilih provinsi terlebih dahulu</option>")
+                    .val('').trigger('change');
+            }
         });
 
     });
 
-    document.querySelectorAll('.foto-input').forEach(function(input) {
-        input.addEventListener('change', function(e) {
-            var file = e.target.files[0];
-            var previewId = e.target.dataset.preview;
-            var wrapper = document.getElementById(previewId);
-            var img = wrapper.querySelector('img');
-            var nameSpan = wrapper.querySelector('.preview-filename');
+    function previewFoto(input, field) {
+        const previewDiv = document.getElementById('preview_' + field);
+        const previewImg = document.getElementById('img_' + field);
 
-            if (!file) {
-                wrapper.classList.add('d-none');
-                return;
-            }
+        if (!input.files || !input.files[0]) {
+            previewDiv.style.display = 'none';
+            return;
+        }
 
-            if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
-                Swal.fire({
-                    title: 'Format Salah',
-                    text: 'File harus berformat JPEG (.jpg / .jpeg).',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                e.target.value = '';
-                wrapper.classList.add('d-none');
-                return;
-            }
+        const file = input.files[0];
 
-            if (file.size > 2 * 1024 * 1024) {
-                Swal.fire({
-                    title: 'File Terlalu Besar',
-                    text: 'Ukuran file maksimal 2MB.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                e.target.value = '';
-                wrapper.classList.add('d-none');
-                return;
-            }
+        if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
+            alert('File harus berformat JPG/JPEG.');
+            input.value = '';
+            previewDiv.style.display = 'none';
+            return;
+        }
 
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                img.src = e.target.result;
-                nameSpan.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
-                wrapper.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
-        });
-    });
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran file maksimal 2MB.');
+            input.value = '';
+            previewDiv.style.display = 'none';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewDiv.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearPreview(field) {
+        const input = document.getElementById(field);
+        const previewDiv = document.getElementById('preview_' + field);
+        const previewImg = document.getElementById('img_' + field);
+
+        input.value = '';
+        previewImg.src = '';
+        previewDiv.style.display = 'none';
+    }
 </script>

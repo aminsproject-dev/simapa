@@ -263,12 +263,13 @@
                         </div>
                         <!-- /row data pribadi -->
 
+                        <!-- SECTION DOKUMEN FOTO -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="card border">
                                     <div class="card-header py-2">
                                         <h6 class="mb-0">
-                                            <i class="ph-image me-2"></i>
+                                            <i class="ph-images me-2"></i>
                                             Dokumen Foto
                                         </h6>
                                     </div>
@@ -291,33 +292,46 @@
                                                     <div class="card h-100 border text-center">
                                                         <div class="card-body p-2">
                                                             <p class="fw-semibold small mb-2"><?= $label; ?></p>
+
                                                             <?php if (!empty($filename)): ?>
-                                                                <a href="<?= base_url('uploads/pekerja/' . $filename); ?>" target="_blank" rel="noopener noreferrer">
-                                                                    <img src="<?= base_url('uploads/pekerja' . $filename); ?>" alt="<?= $label; ?>" class="img-thumbnail w-100" style="max-height: 200px; object-fit: cover;" loading="lazy">
+                                                                <a href="<?= site_url('pekerja/foto/' . $filename); ?>"
+                                                                    target="_blank" rel="noopener noreferrer">
+                                                                    <img src="<?= site_url('pekerja/foto/' . $filename); ?>"
+                                                                        alt="<?= $label; ?>"
+                                                                        class="img-thumbnail w-100"
+                                                                        style="max-height: 200px; object-fit: cover;"
+                                                                        loading="lazy">
                                                                 </a>
                                                                 <div class="mt-1">
-                                                                    <a href="<?= base_url('uploads/pekerja' . $filename); ?>" target="_blank" class="btn btn-outline-primary btn-xs mt-1" rel="noopener noreferrer">
+                                                                    <a href="<?= site_url('pekerja/foto/' . $filename); ?>"
+                                                                        target="_blank"
+                                                                        class="btn btn-outline-primary btn-xs mt-1"
+                                                                        rel="noopener noreferrer">
                                                                         <i class="ph-arrow-square-out me-1"></i>
                                                                         Lihat Penuh
                                                                     </a>
                                                                 </div>
                                                             <?php else: ?>
-                                                                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 160px;">
+                                                                <div class="d-flex align-items-center justify-content-center bg-light rounded"
+                                                                    style="height: 160px;">
                                                                     <div class="text-muted">
                                                                         <i class="ph-image ph-2x d-block mb-1"></i>
                                                                         <small>Belum diisi</small>
                                                                     </div>
                                                                 </div>
                                                             <?php endif; ?>
+
                                                         </div>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- /SECTION DOKUMEN FOTO -->
 
                         <!-- TABEL PENGALAMAN PEKERJA -->
                         <div class="row mt-4">
@@ -375,9 +389,9 @@
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <?= match (strtolower($pengalaman['status'] ?? '')) {
-                                                                        'aktif'    => '<span class="badge bg-success bg-opacity-10 text-success">Aktif</span>',
+                                                                        'aktif' => '<span class="badge bg-success bg-opacity-10 text-success">Aktif</span>',
                                                                         'nonaktif' => '<span class="badge bg-secondary bg-opacity-10 text-secondary">Nonaktif</span>',
-                                                                        default    => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
+                                                                        default => '<span class="badge bg-secondary bg-opacity-10 text-secondary">-</span>',
                                                                     }; ?>
                                                                 </td>
                                                                 <td class="text-center">

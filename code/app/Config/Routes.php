@@ -61,6 +61,8 @@ $routes->group('/pekerja', [
     $routes->get('import-example', 'PekerjaController::importExample');
     $routes->post('import-save', 'PekerjaController::importSave');
     $routes->get('export', 'PekerjaController::export');
+
+    $routes->get('foto/(:segment)', 'PekerjaController::serveFile/$1');
 });
 
 $routes->group('/pengalaman', [

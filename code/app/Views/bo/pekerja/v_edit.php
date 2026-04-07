@@ -11,7 +11,7 @@
                         <div class="mt-2 mt-sm-0 ms-sm-auto d-flex gap-2"></div>
                     </div>
 
-                    <form enctype="multipart/form-data" action="<?= base_url('pekerja/update/' . encrypt_data($row_pekerja['id_pekerja'])); ?>" method="post">
+                    <form enctype="multipart/form-data" action="<?= base_url('pekerja/edit/' . encrypt_data($row_pekerja['id_pekerja'])); ?>" method="post">
                         <?= csrf_field(); ?>
                         <div class="card-body">
 
@@ -295,64 +295,78 @@
                                 <div class="card-body">
                                     <div class="row g-3">
 
-                                        <?php
-                                        $fotoList = [
-                                            'foto_ktp' => 'Foto KTP',
-                                            'foto_ijazah' => 'Foto Ijazah',
-                                            'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
-                                            'foto_npwp' => 'Foto NPWP',
-                                            'foto_sertifikasi' => 'Foto Sertifikasi',
-                                            'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
-                                        ];
-                                        foreach ($fotoList as $fieldName => $label):
-                                            $existingFile = $row_pekerja[$fieldName] ?? null;
-                                            $isEdit       = isset($row_pekerja);
-                                        ?>
-                                            <div class="col-lg-4 col-md-6">
-                                                <div class="card h-100 border">
-                                                    <div class="card-body">
-                                                        <label class="form-label fw-semibold">
-                                                            <?= $label; ?>
-                                                            <span class="text-danger">*</span>
-                                                        </label>
+                                        <?php foreach (
+                                            [
+                                                'foto_ktp' => 'Foto KTP',
+                                                'foto_ijazah' => 'Foto Ijazah',
+                                                'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
+                                                'foto_npwp' => 'Foto NPWP',
+                                                'foto_sertifikasi' => 'Foto Sertifikasi',
+                                                'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
+                                            ] as $field => $label
+                                        ): ?>
 
-                                                        <!-- Tampilkan foto existing di v_edit -->
-                                                        <?php if (!empty($existingFile)): ?>
-                                                            <div class="mb-2" id="existing_<?= $fieldName; ?>">
-                                                                <img src="<?= base_url('uploads/pekerja/' . $existingFile); ?>"
-                                                                    alt="<?= $label; ?>"
-                                                                    class="img-thumbnail w-100"
-                                                                    style="max-height: 180px; object-fit: cover; cursor: pointer;"
-                                                                    onclick="window.open(this.src, '_blank')">
-                                                                <div class="text-muted small mt-1">
-                                                                    <i class="ph-check-circle text-success me-1"></i>
-                                                                    File sudah ada. Upload baru untuk mengganti.
-                                                                </div>
-                                                            </div>
-                                                        <?php endif; ?>
+                                            <div class="mb-3">
+                                                <label for="<?= $field; ?>" class="form-label fw-semibold">
+                                                    <?= $label; ?>
+                                                </label>
 
-                                                        <!-- Input file -->
-                                                        <input type="file"
-                                                            name="<?= $fieldName; ?>"
-                                                            id="<?= $fieldName; ?>"
-                                                            class="form-control foto-input"
-                                                            accept="image/jpeg"
-                                                            data-preview="preview_<?= $fieldName; ?>"
-                                                            <?= empty($existingFile) ? 'required' : ''; ?>>
-
-                                                        <div class="img-preview-wrapper d-none mt-2" id="preview_<?= $fieldName; ?>">
-                                                            <img src="" alt="Preview <?= $label; ?>"
-                                                                class="img-thumbnail w-100"
-                                                                style="max-height: 180px; object-fit: cover;">
-                                                            <div class="d-flex align-items-center mt-1 text-success small">
-                                                                <i class="ph-check-circle me-1"></i>
-                                                                <span class="preview-filename"></span>
-                                                            </div>
+                                                <?php if (!empty($row_pekerja[$field])): ?>
+                                                    <div id="current_<?= $field; ?>" class="mb-2">
+                                                        <p class="text-muted mb-1" style="font-size: 0.85rem;">
+                                                            <i class="bi bi-image"></i> Foto saat ini:
+                                                        </p>
+                                                        <a href="<?= site_url('pekerja/foto/' . $row_pekerja[$field]); ?>"
+                                                            target="_blank"
+                                                            title="Klik untuk lihat penuh">
+                                                            <img src="<?= site_url('pekerja/foto/' . $row_pekerja[$field]); ?>"
+                                                                alt="<?= $label; ?>"
+                                                                class="img-thumbnail"
+                                                                style="max-height: 150px; object-fit: cover;"
+                                                                loading="lazy">
+                                                        </a>
+                                                        <div class="mt-1">
+                                                            <small class="text-muted fst-italic">
+                                                                Kosongkan input di bawah jika tidak ingin mengganti.
+                                                            </small>
                                                         </div>
+                                                    </div>
+                                                <?php endif; ?>
 
+                                                <div id="preview_<?= $field; ?>" class="mb-2" style="display: none;">
+                                                    <p class="text-muted mb-1" style="font-size: 0.85rem;">
+                                                        <i class="bi bi-eye"></i> Preview foto baru:
+                                                    </p>
+                                                    <img id="img_<?= $field; ?>"
+                                                        src=""
+                                                        alt="Preview <?= $label; ?>"
+                                                        class="img-thumbnail"
+                                                        style="max-height: 150px; object-fit: cover;">
+                                                    <div class="mt-1">
+                                                        <small class="text-success fw-semibold">
+                                                            <i class="bi bi-check-circle"></i> Foto baru siap diupload
+                                                        </small>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-link text-danger p-0 ms-2"
+                                                            onclick="clearPreview('<?= $field; ?>')">
+                                                            <i class="bi bi-x-circle"></i> Batal ganti
+                                                        </button>
                                                     </div>
                                                 </div>
+
+                                                <input type="file"
+                                                    class="form-control <?= session('errors.' . $field) ? 'is-invalid' : ''; ?>"
+                                                    id="<?= $field; ?>"
+                                                    name="<?= $field; ?>"
+                                                    accept="image/jpeg, image/jpg"
+                                                    onchange="previewFoto(this, '<?= $field; ?>')"
+                                                    <?= empty($row_pekerja[$field]) ? 'required' : ''; ?>>
+
+                                                <?php if (session('errors.' . $field)): ?>
+                                                    <div class="invalid-feedback"><?= session('errors.' . $field); ?></div>
+                                                <?php endif; ?>
                                             </div>
+
                                         <?php endforeach; ?>
 
                                     </div>
@@ -400,8 +414,9 @@
             $(elTarget).html("<option value=''>Memuat data...</option>");
 
             $.ajax({
-                url: "<?= base_url('regency/get-specific'); ?>",
+                url: "<?= base_url('master/regency/get-specific'); ?>",
                 type: 'GET',
+                dataType: 'json',
                 data: {
                     id: id_provinsi
                 },
@@ -415,7 +430,12 @@
                     $(elTarget).html(options);
                     refreshSelect2(elTarget);
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Gagal memuat data kabupaten:', {
+                        status: status,
+                        error: error,
+                        responseText: xhr.responseText
+                    });
                     $(elTarget).html("<option value=''>Gagal memuat data</option>");
                     refreshSelect2(elTarget);
                 }
@@ -435,50 +455,55 @@
 
     });
 
-    document.querySelectorAll('.foto-input').forEach(function(input) {
-        input.addEventListener('change', function(e) {
-            var file = e.target.files[0];
-            var previewId = e.target.dataset.preview;
-            var wrapper = document.getElementById(previewId);
-            var img = wrapper.querySelector('img');
-            var nameSpan = wrapper.querySelector('.preview-filename');
+    function previewFoto(input, field) {
+        const previewDiv = document.getElementById('preview_' + field);
+        const previewImg = document.getElementById('img_' + field);
+        const currentDiv = document.getElementById('current_' + field);
 
-            if (!file) {
-                wrapper.classList.add('d-none');
-                return;
-            }
+        if (!input.files || !input.files[0]) {
+            previewDiv.style.display = 'none';
+            if (currentDiv) currentDiv.style.display = 'block';
+            return;
+        }
 
-            if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
-                Swal.fire({
-                    title: 'Format Salah',
-                    text: 'File harus berformat JPEG (.jpg / .jpeg).',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                e.target.value = '';
-                wrapper.classList.add('d-none');
-                return;
-            }
+        const file = input.files[0];
 
-            if (file.size > 2 * 1024 * 1024) {
-                Swal.fire({
-                    title: 'File Terlalu Besar',
-                    text: 'Ukuran file maksimal 2MB.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                e.target.value = '';
-                wrapper.classList.add('d-none');
-                return;
-            }
+        if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
+            alert('File harus berformat JPG/JPEG.');
+            input.value = '';
+            previewDiv.style.display = 'none';
+            if (currentDiv) currentDiv.style.display = 'block';
+            return;
+        }
 
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                img.src = e.target.result;
-                nameSpan.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
-                wrapper.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
-        });
-    });
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Ukuran file maksimal 2MB.');
+            input.value = '';
+            previewDiv.style.display = 'none';
+            if (currentDiv) currentDiv.style.display = 'block';
+            return;
+        }
+
+        if (currentDiv) currentDiv.style.display = 'none';
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewDiv.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearPreview(field) {
+        const input = document.getElementById(field);
+        const previewDiv = document.getElementById('preview_' + field);
+        const previewImg = document.getElementById('img_' + field);
+        const currentDiv = document.getElementById('current_' + field);
+
+        input.value = '';
+        previewImg.src = '';
+        previewDiv.style.display = 'none';
+
+        if (currentDiv) currentDiv.style.display = 'block';
+    }
 </script>
