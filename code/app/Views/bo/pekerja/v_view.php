@@ -15,6 +15,17 @@
                     <div class="card-body">
 
                         <div class="text-end mb-3">
+
+                            <a href="<?= site_url('pekerja/export-pdf/' . encrypt_data($row_pekerja['id_pekerja'])) ?>">
+                                <button type="button" class="btn btn-info btn-labeled btn-labeled-start btn-sm my-1"
+                                    data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Export PDF">
+                                    <span class="btn-labeled-icon bg-black bg-opacity-20">
+                                        <i class="ph-file-pdf ph-lg"></i>
+                                    </span>
+                                    Export PDF
+                                </button>
+                            </a>
+
                             <a href="<?= base_url('pengalaman-pekerja/add/' . encrypt_data($row_pekerja['id_pekerja'])); ?>">
                                 <button type="button" class="btn btn-primary btn-labeled btn-labeled-start btn-sm my-1"
                                     data-bs-popup="popover" data-bs-trigger="hover" data-bs-content="Tambah pengalaman kontrak">

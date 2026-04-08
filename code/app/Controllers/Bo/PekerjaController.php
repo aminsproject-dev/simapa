@@ -17,6 +17,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use RuntimeException;
 
 class PekerjaController extends BaseController
@@ -177,7 +179,7 @@ class PekerjaController extends BaseController
             'dt_jenis_tenaga_ahli' => $this->jenisTenagaAhliModel->where('status', 1)->findAll(),
             'dt_country' => $this->countryModel->findAll(),
             'dt_province' => $this->provinceModel->findAll(),
-            'dt_kabupaten' => $this->regencyModel->orderBy('nama_kabupaten', 'asc')->findAll(), // ✅ tambah
+            'dt_kabupaten' => $this->regencyModel->orderBy('nama_kabupaten', 'asc')->findAll(),
             'dt_pendidikan_akhir' => $this->pendidikanAkhirModel->findAll(),
             'opt_jenis_kelamin' => ['Pria', 'Wanita'],
             'opt_tingkat_bahasa' => ['Baik', 'Sedang', 'Buruk'],
@@ -631,5 +633,54 @@ class PekerjaController extends BaseController
             ->setHeader('Content-Length', filesize($filePath))
             ->setHeader('Cache-Control', 'public, max-age=86400')
             ->setBody(file_get_contents($filePath));
+    }
+
+    public function exportPdf($id)
+    {
+        $id_pekerja = decrypt_data($id);
+        $row_pekerja = $this->pekerjaModel->getSelectedData($id_pekerja);
+
+        if (empty($row_pekerja)) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
+        }
+
+        $fotoFields = [
+            'foto_ktp' => 'Foto KTP',
+            'foto_ijazah' => 'Foto Ijazah',
+            'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
+            'foto_npwp' => 'Foto NPWP',
+            'foto_sertifikasi' => 'Foto Sertifikasi',
+            'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
+        ];
+
+        $fotoBase64 = [];
+        foreach ($fotoFields as $field => $label) {
+            $fotoBase64[$field] = null;
+            if (!empty($row_pekerja[$field])) {
+                $filePath = $this->uploadPath . $row_pekerja[$field];
+                if (file_exists($filePath)) {
+                    $fotoBase64[$field] = 'data:image/jpeg;base64,' . base64_encode(file_get_contents($filePath));
+                }
+            }
+        }
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+        $options->set('defaultFont', 'DejaVu Sans');
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml(view('bo/pekerja/v_pdf', [
+            'row_pekerja' => $row_pekerja,
+            'foto_base64' => $fotoBase64,
+            'foto_labels' => $fotoFields,
+        ]));
+
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'Pekerja_' . str_replace(' ', '_', $row_pekerja['nama']) . '_' . date('Ymd') . '.pdf';
+        $dompdf->stream($filename, ['Attachment' => true]);
+        exit;
     }
 }

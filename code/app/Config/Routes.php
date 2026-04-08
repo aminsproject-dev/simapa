@@ -63,6 +63,8 @@ $routes->group('/pekerja', [
     $routes->get('export', 'PekerjaController::export');
 
     $routes->get('foto/(:segment)', 'PekerjaController::serveFile/$1');
+
+    $routes->get('export-pdf/(:segment)', 'PekerjaController::exportPdf/$1');
 });
 
 $routes->group('/pengalaman', [
