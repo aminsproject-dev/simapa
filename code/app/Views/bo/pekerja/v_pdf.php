@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Data Pekerja - <?= esc($row_pekerja['nama']); ?></title>
-
     <style>
         * {
             margin: 0;
@@ -287,8 +286,8 @@
         }
 
         .foto-table td {
-            width: 33.33%;
-            padding: 6px;
+            width: 50%;
+            padding: 8px;
             vertical-align: top;
             text-align: center;
         }
@@ -302,14 +301,14 @@
 
         .foto-card img {
             width: 100%;
-            max-height: 120px;
-            object-fit: cover;
+            max-height: 200px;
+            object-fit: contain;
             border-radius: 3px;
             border: 1px solid #e2e8f0;
         }
 
         .foto-card .foto-placeholder {
-            height: 100px;
+            height: 150px;
             background: #edf2f7;
             border: 1.5px dashed #cbd5e0;
             border-radius: 3px;
@@ -320,7 +319,7 @@
         }
 
         .foto-label {
-            font-size: 7.5pt;
+            font-size: 8pt;
             font-weight: bold;
             color: #4a5568;
             margin-top: 5px;
@@ -351,6 +350,7 @@
 </head>
 
 <body>
+
     <div class="header">
         <table class="header-table">
             <tr>
@@ -359,9 +359,9 @@
                     <div class="header-sub">Sistem Informasi Sumber Daya Manusia</div>
                 </td>
                 <td class="header-meta">
-                    <div class="header-bagde">DATA PEKERJA</div>
+                    <div class="header-badge">DATA PEKERJA</div>
                     <div>Dicetak: <?= date('d/m/Y H:i'); ?> WIB</div>
-                    <div>No. ID: <?= esc($row_pekerja['is_pekerja']); ?></div>
+                    <div>No. ID: <?= esc($row_pekerja['id_pekerja']); ?></div>
                 </td>
             </tr>
         </table>
@@ -373,27 +373,25 @@
             <tr>
                 <td class="profile-foto">
                     <?php if (!empty($foto_base64['foto_ktp'])): ?>
-                        <img src="<?= $foto_base64['foto_ktp'] ?>" alt="Foto KTP">
+                        <img src="<?= $foto_base64['foto_ktp']; ?>" alt="Foto KTP">
                     <?php else: ?>
                         <div class="profile-foto-placeholder">
-                            Foto <br> tidak ada
+                            Foto<br>tidak ada
                         </div>
                     <?php endif; ?>
                     <div style="font-size:7pt; color:#a0aec0; text-align:center; margin-top:3px;">Foto KTP</div>
                 </td>
                 <td style="vertical-align: top;">
-                    <div class="profile-name"><?= esc($row_pekerja['name']); ?></div>
+                    <div class="profile-name"><?= esc($row_pekerja['nama']); ?></div>
                     <div class="profile-badge-wrap">
                         <?php if (!empty($row_pekerja['nama_status'])): ?>
-                            <span class="badge badge-blue"><?= esc($row_pekerja['nama_status']) ?></span>
+                            <span class="badge badge-blue"><?= esc($row_pekerja['nama_status']); ?></span>
                         <?php endif; ?>
-
                         <?php if (!empty($row_pekerja['nama_jenis_tenaga_ahli'])): ?>
                             <span class="badge badge-green"><?= esc($row_pekerja['nama_jenis_tenaga_ahli']); ?></span>
                         <?php endif; ?>
-
                         <?php if (!empty($row_pekerja['nama_pendidikan_akhir'])): ?>
-                            <span class="badge badge-purple"><?= esc($row_pekerja['nama_pendidikan_akhir']); ?></span>
+                            <span class="badge badge-gray"><?= esc($row_pekerja['nama_pendidikan_akhir']); ?></span>
                         <?php endif; ?>
                     </div>
 
@@ -426,7 +424,7 @@
                         <tr>
                             <td class="label">Pengalaman Kerja</td>
                             <td class="sep">:</td>
-                            <td><?= !empty($row_pekerja['lama_pengalaman_kerja_tahun']) ? esc($row_pekerja['lama_pengalaman_kerja_tahun']) : '<span class="text-muted">-</span>'; ?></td>
+                            <td><?= !empty($row_pekerja['lama_pengalaman_kerja_tahun']) ? esc($row_pekerja['lama_pengalaman_kerja_tahun']) . ' Tahun' : '<span class="text-muted">-</span>'; ?></td>
                         </tr>
                     </table>
                 </td>
@@ -448,7 +446,11 @@
                         <tr>
                             <td class="td-label">Tanggal Lahir</td>
                             <td class="td-sep">:</td>
-                            <td class="td-value"><?= esc($row_pekerja['tanggal_lahir'] ? date('d F Y', strtotime($row_pekerja['tanggal_lahir'])) : '-'); ?></td>
+                            <td class="td-value">
+                                <?= !empty($row_pekerja['tanggal_lahir'])
+                                    ? date('d F Y', strtotime($row_pekerja['tanggal_lahir']))
+                                    : '-'; ?>
+                            </td>
                         </tr>
                         <tr>
                             <td class="td-label">Negara Tempat Lahir</td>
@@ -466,7 +468,7 @@
                             <td class="td-value"><?= esc($row_pekerja['no_bpjs_kesehatan'] ?? '-'); ?></td>
                         </tr>
                         <tr>
-                            <td class="td-label">No. BPJS Ketenagakerjaan</td>
+                            <td class="td-label">No. BPJS Tenagakerjaan</td>
                             <td class="td-sep">:</td>
                             <td class="td-value"><?= esc($row_pekerja['no_bpjs_ketenagakerjaan'] ?? '-'); ?></td>
                         </tr>
@@ -518,12 +520,13 @@
                         'Buruk' => 'lang-bar-buruk',
                     ];
                     ?>
-                    <table>
+                    <table class="lang-table">
                         <?php foreach ($bahasaList as $field => $langLabel): ?>
                             <?php $level = $row_pekerja[$field] ?? '-'; ?>
                             <tr>
+                                <td class="lang-label"><?= $langLabel; ?></td>
                                 <td>
-                                    <div>
+                                    <div class="lang-bar-wrap">
                                         <div class="lang-bar <?= $barClass[$level] ?? ''; ?>"></div>
                                     </div>
                                 </td>
@@ -532,9 +535,111 @@
                         <?php endforeach; ?>
                     </table>
                 </td>
+                <td class="col-right">
+                    <table class="data-table">
+                        <tr>
+                            <td class="td-label">Profesi / Keahlian</td>
+                            <td class="td-sep">:</td>
+                            <td class="td-value"><?= esc($row_pekerja['profesi_keahlian'] ?? '-'); ?></td>
+                        </tr>
+                    </table>
+                </td>
             </tr>
         </table>
     </div>
+
+    <div class="section">
+        <div class="section-title">Riwayat Pendidikan</div>
+        <table class="data-table">
+            <tr>
+                <td class="td-label">Pendidikan Akhir</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= esc($row_pekerja['nama_pendidikan_akhir'] ?? '-'); ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Pendidikan Formal</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= !empty($row_pekerja['pendidikan_formal']) ? strip_tags($row_pekerja['pendidikan_formal']) : '-'; ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Pendidikan Non Formal</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= !empty($row_pekerja['pendidikan_non_formal']) ? strip_tags($row_pekerja['pendidikan_non_formal']) : '-'; ?></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Dokumen Foto</div>
+        <table class="foto-table">
+            <tr>
+                <?php
+                $fotoRow1 = [
+                    'foto_ktp' => 'Foto KTP',
+                    'foto_ijazah' => 'Foto Ijazah',
+                ];
+                foreach ($fotoRow1 as $field => $label): ?>
+                    <td>
+                        <div class="foto-card">
+                            <?php if (!empty($foto_base64[$field])): ?>
+                                <img src="<?= $foto_base64[$field]; ?>" alt="<?= $label; ?>">
+                            <?php else: ?>
+                                <div class="foto-placeholder">Belum ada foto</div>
+                            <?php endif; ?>
+                            <div class="foto-label"><?= $label; ?></div>
+                        </div>
+                    </td>
+                <?php endforeach; ?>
+            </tr>
+
+            <tr>
+                <?php
+                $fotoRow2 = [
+                    'foto_transkrip_nilai' => 'Foto Transkrip Nilai',
+                    'foto_npwp' => 'Foto NPWP',
+                ];
+                foreach ($fotoRow2 as $field => $label): ?>
+                    <td>
+                        <div class="foto-card">
+                            <?php if (!empty($foto_base64[$field])): ?>
+                                <img src="<?= $foto_base64[$field]; ?>" alt="<?= $label; ?>">
+                            <?php else: ?>
+                                <div class="foto-placeholder">Belum ada foto</div>
+                            <?php endif; ?>
+                            <div class="foto-label"><?= $label; ?></div>
+                        </div>
+                    </td>
+                <?php endforeach; ?>
+            </tr>
+
+            <tr>
+                <?php
+                $fotoRow3 = [
+                    'foto_sertifikasi' => 'Foto Sertifikasi',
+                    'foto_nilai_sertifikasi' => 'Foto Nilai Sertifikasi',
+                ];
+                foreach ($fotoRow3 as $field => $label): ?>
+                    <td>
+                        <div class="foto-card">
+                            <?php if (!empty($foto_base64[$field])): ?>
+                                <img src="<?= $foto_base64[$field]; ?>" alt="<?= $label; ?>">
+                            <?php else: ?>
+                                <div class="foto-placeholder">Belum ada foto</div>
+                            <?php endif; ?>
+                            <div class="foto-label"><?= $label; ?></div>
+                        </div>
+                    </td>
+                <?php endforeach; ?>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        Dokumen ini dicetak secara otomatis oleh Sistem SISURO &nbsp;|&nbsp;
+        <?= date('d F Y H:i'); ?> WIB &nbsp;|&nbsp;
+        Dokumen ini bersifat resmi dan rahasia
+    </div>
+
 </body>
 
 </html>
