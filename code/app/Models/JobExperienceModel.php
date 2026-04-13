@@ -77,7 +77,7 @@ class JobExperienceModel extends Model
         $builder->select('
             t.*,
 
-            kp.nama_kategori,
+            kp.nama_kategori_pekerjaan,
             kbli.kode_kbli,
             kbli.nama_kbli,
 
