@@ -232,6 +232,16 @@
 
                         </li>
 
+                        <li class="nav-item">
+                            <a href="<?= base_url('peralatan'); ?>" class="nav-link <?= isset($active_peralatan) ? $active_peralatan : ''; ?>">
+                                <i class="ph-storefront"></i>
+                                <span>
+                                    Peralatan
+                                </span>
+                            </a>
+
+                        </li>
+
                         <li class="nav-item-header">
                             <div class="text-uppercase fs-sm lh-sm opacity-50 sidebar-resize-hide">Master</div>
                             <i class="ph-dots-three sidebar-resize-show"></i>

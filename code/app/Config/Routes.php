@@ -97,6 +97,25 @@ $routes->group('/pengalaman-pekerja', [
     $routes->get('delete/(:segment)', 'PengalamanPekerjaController::delete/$1');
 });
 
+$routes->group('/peralatan', [
+    'filter' => 'authGuard',
+    'namespace' => 'App\Controllers\Bo',
+], function ($routes) {
+    $routes->get('', 'PeralatanController::index');
+
+    $routes->get('add', 'PeralatanController::add');
+    $routes->post('add', 'PeralatanController::store');
+
+    $routes->get('view/(:segment)', 'PeralatanController::view/$1');
+
+    $routes->get('edit/(:segment)', 'PeralatanController::edit/$1');
+    $routes->post('edit/(:segment)', 'PeralatanController::update/$1');
+
+    $routes->get('delete/(:segment)', 'PeralatanController::delete/$1');
+
+    $routes->get('file/(:segment)', 'PeralatanController::serveFile/$1');
+});
+
 $routes->group('/marketing', [
     'filter' => 'authGuard',
     'namespace' => 'App\Controllers\Bo\Marketing',
