@@ -6,6 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\PeralatanModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use RuntimeException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PeralatanController extends BaseController
 {
@@ -240,5 +245,240 @@ class PeralatanController extends BaseController
             ->setHeader('Content-Length', filesize($filepath))
             ->setHeader('Cache-Control', 'public, max-age=86400')
             ->setBody(file_get_contents($filepath));
+    }
+
+    public function export()
+    {
+        $list_peralatan = $this->peralatanModel->getAll();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = [
+            'nama_peralatan',
+            'merk_tipe',
+            'kapasitas',
+            'tahun_pembuatan',
+            'jumlah',
+            'kondisi',
+            'status_kepemilikan',
+            'lokasi_sekarang',
+            'keterangan',
+        ];
+
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col . '1', $header);
+            $col++;
+        }
+
+        $rowNum = 2;
+        foreach ($list_peralatan as $row) {
+            $dataRow = [
+                $row['nama_peralatan'] ?? '',
+                $row['merk_tipe'] ?? '',
+                $row['kapasitas'] ?? '',
+                !empty($row['tahun_pembuatan']) ? $row['tahun_pembuatan'] : '',
+                $row['jumlah'] ?? '',
+                $row['kondisi'] ?? '',
+                $row['status_kepemilikan'] ?? '',
+                $row['lokasi_sekarang'] ?? '',
+                $row['keterangan'] ?? '',
+            ];
+
+            $sheet->fromArray($dataRow, null, 'A' . $rowNum);
+
+            $stringFields = ['A', 'B', 'C', 'G', 'H', 'I'];
+            foreach ($stringFields as $colLetter) {
+                $sheet->setCellValueExplicit(
+                    $colLetter . $rowNum,
+                    (string) ($dataRow[ord($colLetter) - ord('A')] ?? ''),
+                    DataType::TYPE_STRING
+                );
+            }
+
+            $rowNum++;
+        }
+
+        $filename = 'Data peralatan ' . date('Y-m-d') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function importExample()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = [
+            'A' => 'nama_peralatan',
+            'B' => 'merk_tipe',
+            'C' => 'kapasitas',
+            'D' => 'tahun_pembuatan',
+            'E' => 'jumlah',
+            'F' => 'kondisi',
+            'G' => 'status_kepemilikan',
+            'H' => 'lokasi_sekarang',
+            'I' => 'keterangan',
+        ];
+
+        foreach ($headers as $col => $header) {
+            $sheet->setCellValue($col . '1', $header);
+        }
+
+        $contoh = [
+            'A' => 'Stiker Reflektor',
+            'B' => 'Merek XYZ',
+            'C' => '5 Kg',
+            'D' => '2020',
+            'E' => '10',
+            'F' => 'Baik',
+            'G' => 'Sendiri',
+            'H' => 'Gudang A',
+            'I' => 'Dalam kondisi baik',
+        ];
+
+        foreach ($contoh as $col => $value) {
+            $sheet->setCellValue($col . '2', $value);
+        }
+
+        $textColumns = ['A', 'B', 'C', 'H', 'I'];
+        foreach ($textColumns as $col) {
+            $sheet->getStyle($col . '1:' . $col . '1001')
+                ->getNumberFormat()
+                ->setFormatCode(NumberFormat::FORMAT_TEXT);
+        }
+
+        $applyDropdown = function (string $col, string $formula) use ($sheet) {
+            $range = "{$col}2:{$col}1001";
+            $validation = $sheet->getCell("{$col}2")->getDataValidation();
+            $validation->setType(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::TYPE_LIST);
+            $validation->setErrorStyle(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::STYLE_STOP);
+            $validation->setAllowBlank(true);
+            $validation->setShowDropDown(true);
+            $validation->setShowErrorMessage(true);
+            $validation->setErrorTitle('Nilai tidak valid');
+            $validation->setError('Silahkan pilih nilai dari daftar yang tersedia.');
+            $validation->setShowInputMessage(true);
+            $validation->setPromptTitle('Pilih dari daftar');
+            $validation->setPrompt('Klik dropdown untuk memilih nilai yang tersedia.');
+            $validation->setFormula1($formula);
+            $validation->setSqref($range);
+        };
+
+        $applyDropdown('F', '"Baik,Buruk"');
+        $applyDropdown('G', '"Sendiri,Sewa,Dukungan"');
+
+        $filename = 'Master import peralatan.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function importSave()
+    {
+        helper('import');
+
+        $db = db_connect();
+        $db->transBegin();
+
+        try {
+            $file = $this->request->getFile('file_csv');
+
+            if (!$file || !$file->isValid()) {
+                throw new \CodeIgniter\Validation\Exceptions\ValidationException('File tidak valid');
+            }
+
+            $ext = strtolower($file->getClientExtension());
+            if (!in_array($ext, ['xlsx', 'xls'])) {
+                throw new \CodeIgniter\Validation\Exceptions\ValidationException('Format file harus .xlsx atau .xls');
+            }
+
+            $reader = IOFactory::createReaderForFile($file->getTempName());
+            $reader->setReadDataOnly(false);
+            $spreadsheet = IOFactory::load($file->getTempName());
+            $rows = $spreadsheet->getActiveSheet()->toArray();
+
+            array_shift($rows);
+
+            log_message('debug', 'Import Peralatan - Total rows setelah shift: ' . count($rows));
+            if (!empty($rows)) {
+                log_message('debug', 'Sample row: ' . print_r($rows[0], true));
+            }
+
+            $insertBatch = [];
+            foreach ($rows as $row) {
+                if (empty($row[0])) continue;
+
+                $insertBatch[] = [
+                    'nama_peralatan' => trim($row[0] ?? ''),
+                    'merk_tipe' => trim($row[1] ?? ''),
+                    'kapasitas' => trim($row[2] ?? ''),
+                    'tahun_pembuatan' => $row[3] !== '' ? (int)$row[3] : null,
+                    'jumlah' => $row[4] !== '' ? (int)$row[4] : null,
+                    'kondisi' => trim($row[5] ?? ''),
+                    'status_kepemilikan' => trim($row[6] ?? ''),
+                    'lokasi_sekarang' => trim($row[7] ?? ''),
+                    'keterangan' => trim($row[8] ?? ''),
+                ];
+            }
+
+            if (!empty($insertBatch)) {
+                $validationResults = [];
+                foreach ($insertBatch as $index => $data) {
+                    $errors = [];
+                    if (empty($data['nama_peralatan'])) $errors[] = 'nama_peralatan kosong';
+                    if (empty($data['jumlah'])) $errors[] = 'jumlah kosong';
+                    if (empty($data['kondisi'])) $errors[] = 'kondisi kosong';
+                    if (empty($data['status_kepemilikan'])) $errors[] = 'status_kepemilikan kosong';
+
+                    if (!empty($errors)) {
+                        $validationResults[] = [
+                            'row' => $index + 2,
+                            'errors' => $errors
+                        ];
+                    }
+                }
+
+                if (!empty($validationResults)) {
+                    $db->transRollback();
+                    $errorMsg = 'Validasi gagal pada baris: ' . PHP_EOL;
+                    foreach ($validationResults as $result) {
+                        $errorMsg .= 'Baris ' . $result['row'] . ': ' . implode(', ', $result['errors']) . PHP_EOL;
+                    }
+                    return redirect()->to('peralatan')->with('error', $errorMsg);
+                }
+
+                // Insert satu per satu untuk memastikan escaping dan validasi bekerja
+                $successCount = 0;
+                foreach ($insertBatch as $data) {
+                    if ($this->peralatanModel->insert($data)) {
+                        $successCount++;
+                    } else {
+                        log_message('error', 'Insert error: ' . print_r($data, true) . ' | ' . print_r($this->peralatanModel->errors(), true));
+                    }
+                }
+
+                if ($successCount !== count($insertBatch)) {
+                    throw new RuntimeException('Beberapa data gagal diimport');
+                }
+            }
+
+            $db->transCommit();
+            return redirect()->to('peralatan')->with('success', 'Import Excel berhasil. Total ' . count($insertBatch) . ' data diimport.');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', $e->getMessage() . ' | ' . $e->getLine() . ' | ' . $e->getFile());
+            return redirect()->to('peralatan')->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
     }
 }

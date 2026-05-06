@@ -114,6 +114,10 @@ $routes->group('/peralatan', [
     $routes->get('delete/(:segment)', 'PeralatanController::delete/$1');
 
     $routes->get('file/(:segment)', 'PeralatanController::serveFile/$1');
+
+    $routes->get('import-example', 'PeralatanController::importExample');
+    $routes->post('import-save', 'PeralatanController::importSave');
+    $routes->get('export', 'PeralatanController::export');
 });
 
 $routes->group('/marketing', [
